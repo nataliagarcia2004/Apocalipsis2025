@@ -10,5 +10,5 @@ package apocalipsis2025.juego;
  * @author Natalia Garcia
  */
 public class Juego {
-////prueba
+////prueba2
 }
