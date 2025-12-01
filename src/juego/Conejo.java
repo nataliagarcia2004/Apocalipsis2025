@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package apocalipsis2025.importar;
+package juego;
 
 /**
  *
  * @author Natalia Garcia
  */
-public class ImportadorPartida {
+public class Conejo {
 
 }

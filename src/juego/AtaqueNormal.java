@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package apocalipsis2025.juego;
+package juego;
 
 /**
  *
  * @author Natalia Garcia
  */
-public class Juego {
-////prueba nueva
+public class AtaqueNormal {
+
 }
