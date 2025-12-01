@@ -9,5 +9,5 @@ package juego;
  * @author natal
  */
 public interface Comestible {
-    
+    void serComido(Zombi z);
 }
