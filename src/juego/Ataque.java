@@ -26,6 +26,6 @@ public abstract class Ataque {
 
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // ejecutará el ataque y devolverá los impactos generados
-    public abstract int ejecutarAtaque();
+    public abstract int ejecutar();
 
 }
