@@ -7,7 +7,7 @@ package juego;
 
 /**
  *
- * @author Natalia Garcia
+ * @author Maria Fernandez
  */
 public class Juego {
 ////prueba nueva
