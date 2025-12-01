@@ -7,7 +7,8 @@ package juego;
 
 /**
  *
- * @author Maria Fernandez
+ * @author Maria_Fernandez
+ * 
  */
 public class Juego {
 ////prueba nueva
