@@ -7,8 +7,8 @@ package juego;
 
 /**
  *
- * @author Lisa Qu 1
+ * @author Lisa Qu 
  */
 public class Zombi {
-
+    //prueba
 }
