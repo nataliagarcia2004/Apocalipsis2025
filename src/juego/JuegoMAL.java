@@ -7,8 +7,9 @@ package juego;
 
 /**
  *
- * @author Natalia Garcia
+ * @author Maria_Fernandez
+ * 
  */
-public class Conejo {
-
+public interface JuegoMAL {
+////prueba nueva
 }

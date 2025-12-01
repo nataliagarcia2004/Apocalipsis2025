@@ -9,6 +9,6 @@ package juego;
  *
  * @author Natalia Garcia
  */
-public class Combatiente {
+public class TableroMAL {
 
 }
