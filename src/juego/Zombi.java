@@ -10,5 +10,5 @@ package juego;
  * @author Lisa Qu 
  */
 public class Zombi {
-    //prueba
+    //prueba1
 }
