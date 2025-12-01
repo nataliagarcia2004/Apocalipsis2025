@@ -7,8 +7,8 @@ package juego;
 
 /**
  *
- * @author Natalia Garcia
+ * @author Lisa Qu 
  */
-public class CombatienteMAL {
-
+public class Zombi {
+    //prueba
 }
