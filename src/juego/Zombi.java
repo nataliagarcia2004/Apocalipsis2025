@@ -7,7 +7,7 @@ package juego;
 
 /**
  *
- * @author Lisa Qu 
+ * @author shuyi qu
  */
 public class Zombi {
     //prueba1
