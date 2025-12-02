@@ -9,6 +9,18 @@ package juego;
  *
  * @author Natalia Garcia
  */
-public class AtaqueNormal {
+public class AtaqueNormal extends Ataque {
+     public AtaqueNormal() {
+        super(1, 4, 0); 
+        // POTENCIA 1, ÉXITO 4+, ALCANCE 0
+        // Los valores finales podrían ajustarse después
+    }
+
+    @Override
+    public int ejecutar() {
+        // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
+        // hacer tirada de dado y devolver impactos si acierta
+        return potencia;
+    }
 
 }

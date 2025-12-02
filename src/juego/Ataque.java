@@ -10,7 +10,7 @@ package juego;
  * @author Natalia Garcia
  */
 public abstract class Ataque {
- protected int potencia;
+    protected int potencia;
     protected int valorExito;
     protected int alcance;
 
