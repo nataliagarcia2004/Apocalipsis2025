@@ -13,7 +13,6 @@ public abstract class Ataque {
     protected int potencia;
     protected int valorExito;
     protected int alcance;
-
     public Ataque(int potencia, int valorExito, int alcance) {
         this.potencia = potencia;
         this.valorExito = valorExito;
