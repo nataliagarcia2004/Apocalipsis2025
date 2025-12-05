@@ -10,13 +10,29 @@ package juego;
  * @author Natalia Garcia
  */
 public abstract class Entidad {
-    private String nombre;
-    private Casilla casillaActual;
-    //Constructor de Entidad,ya que es superclase,sus atributos serán heredados a sus subclases,por lo tanto necesito crearlo este cosntructor antes.
+    protected String nombre; //'protected' permite que las subclases lo usen directamente.
+    protected Casilla casillaActual;
+    
+    //Constructor de Entidad,ya que es superclase,sus atributos serán heredados a sus subclases,por lo tanto necesito crearlo este cosntructor antes
     public Entidad(String nombre,Casilla casillaActual){
         this.nombre=nombre;
         this.casillaActual=casillaActual;
     }
-    //Metodo abstract mover que será utilizado por sus subclases
-   public abstract void mover(Casilla casillaDestino);
+    
+    ////getter y setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public Casilla getCasillaActual() {
+        return casillaActual;
+    }
+
+    public void setCasillaActual(Casilla c) {
+        this.casillaActual = c;
+    }
+    
+    
+    //Metodo abstract, no implementacion, mover que será utilizado por sus subclases donde ahis e implementará
+    public abstract void mover(Casilla casillaDestino);
 }

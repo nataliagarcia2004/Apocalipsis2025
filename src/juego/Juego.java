@@ -10,5 +10,6 @@ package juego;
  * @author Natalia Garcia
  */
 public class Juego {
+    ///debe hacer registarr herida para que humano funcione su metodo de:  public void registrarHerida(Zombi z) { 
 
 }
