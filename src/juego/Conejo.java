@@ -12,11 +12,9 @@ package juego;
 //El conejo implementa el comestible
 //Se queda en la misma casilla ya que no se mueve
 public class Conejo extends Entidad implements Comestible {
-    private String nombre;
     //Constructor de Conejo
     public Conejo (String nombre,Casilla casillaActual){
         super(nombre,casillaActual);
-        this.nombre=nombre;
     }
     //Metodo mover
     @Override

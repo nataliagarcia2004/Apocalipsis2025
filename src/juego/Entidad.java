@@ -32,7 +32,6 @@ public abstract class Entidad {
         this.casillaActual = c;
     }
     
-    
     //Metodo abstract, no implementacion, mover que será utilizado por sus subclases donde ahis e implementará
     public abstract void mover(Casilla casillaDestino);
 }

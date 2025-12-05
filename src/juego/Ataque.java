@@ -10,21 +10,29 @@ package juego;
  * @author Natalia Garcia
  */
 public abstract class Ataque {
-    protected int potencia;
-    protected int valorExito;
-    protected int alcance;
-    public Ataque(int potencia, int valorExito, int alcance) {
+    protected String nombre;
+    protected int potencia; //el número de dados que se lanzan. 
+    protected int valorExito;//valor mínimo que tiene que salir en el dado para que se considere un impacto. 
+    protected int alcance;//el número de casillas de distancia de la casilla objetivo
+    //Constructor
+    public Ataque(String nombre,int potencia, int valorExito, int alcance) {
+        this.nombre=nombre;
         this.potencia = potencia;
         this.valorExito = valorExito;
         this.alcance = alcance;
     }
-
-    public int getPotencia() { return potencia; }
-    public int getValorExito() { return valorExito; }
-    public int getAlcance() { return alcance; }
+    public String getNombre(){
+        return nombre;
+    }
+    public int getPotencia() {
+        return potencia; }
+    public int getValorExito() { 
+        return valorExito; }
+    public int getAlcance() {
+        return alcance; }
 
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // ejecutará el ataque y devolverá los impactos generados
-    public abstract int ejecutar();
+    public abstract int ejecutar(Casilla casillaObjectivo);
 
 }
