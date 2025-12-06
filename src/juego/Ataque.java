@@ -34,5 +34,12 @@ public abstract class Ataque {
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // ejecutará el ataque y devolverá los impactos generados
     public abstract int ejecutar(Casilla casillaObjectivo);
-
+    public int calcularImpactos(int hambreZombi){
+        int impactos=0;
+        return impactos;
+    }
+    public void estaEnAlcance(Casilla casillaZombi,Casilla casillaObjectivo){
+        
+    }
+    //toString
 }

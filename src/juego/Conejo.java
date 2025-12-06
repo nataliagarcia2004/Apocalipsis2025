@@ -25,6 +25,9 @@ public class Conejo extends Entidad implements Comestible {
     @Override
     public void serComido(Zombi z){
         //cuando es devorado por el zombi se reduce Una unidad de hambre
+        int hambreActual= z.getHambre();
+        z.setHambre(hambreActual -1);
+        z.registrarComestible(this);//Registra que ha comido a conejo
     }
     
 }
