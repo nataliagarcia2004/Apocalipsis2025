@@ -21,7 +21,7 @@ public class Zombi extends Entidad {
     private static final int MAX_HAMBRE=5;//hambre máximo permitido
     private static final int MIN_HAMBRE=0;
     private AtaqueEspecial ataqueEspecial;//cada zombi tiene su propio ataque especial
-    private AtaqueNormal ataqueNormal;//ataque común de zombi
+    private  AtaqueNormal ataqueNormal;//ataque común de zombi
     //Constructor de Zombi
     public Zombi(String nombre,Casilla casillaActual,AtaqueEspecial ataqueEspecial){
         super(nombre,casillaActual);
