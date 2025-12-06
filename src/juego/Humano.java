@@ -35,7 +35,7 @@ public abstract class Humano extends Entidad implements Comestible  {
         return eliminado;
     }
     
-    //Cada tipo de humano tendrá una manera diferente de moverse, s implementare en los subtipos
+    // Cada tipo de humano tendrá una manera diferente de moverse, se implementará en los subtipos
     @Override
     public abstract void mover(Casilla casillaDestino);
 
@@ -44,22 +44,37 @@ public abstract class Humano extends Entidad implements Comestible  {
     
  
     
-    //metodos comunes
+    // MÉTODOS COMUNES PARA TODOS LOS HUMANOS
     public void recibirAtaque(int impactos) {
         if (impactos >= aguante) {
-            eliminado = true;   //El humano queda fuera del juego
-            aguante = 0;        //Ya no tiene resistencia
+            eliminado = true;
+            aguante = 0;
+            System.out.println(nombre + " ha sido eliminado por un ataque directo.");
+        } else {
+            System.out.println(nombre + " recibió ataques, pero sigue vivo.");
         }
     }
     
     public void registrarHerida(Zombi z) {
-            //cunaod haya sistema de registro
+       //cunaod haya juego porgramado igual hay q cabiar cosas
+        aguante--;
+
+        if (aguante <= 0) {
+            eliminado = true;
+            aguante = 0;
+            System.out.println(nombre + " ha muerto por heridas infligidas por el zombi " + z.getNombre());
+        } else {
+            System.out.println(nombre + " ha recibido 1 herida de " + z.getNombre() +
+                               ". Aguante restante: " + aguante);
+        }
+
     }
     
     @Override
     public void serComido(Zombi z) {
         eliminado = true;
         aguante = 0;
+        System.out.println(nombre + " ha sido comido por el zombi " + z.getNombre());
     }
     
     

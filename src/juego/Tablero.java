@@ -10,5 +10,9 @@ package juego;
  * @author Natalia Garcia
  */
 public class Tablero {
+    ////meot las cabeceras para que chumanos funcinone
+    
+
+   
 
 }
