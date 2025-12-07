@@ -35,11 +35,28 @@ public abstract class Ataque {
     // ejecutará el ataque y devolverá los impactos generados
     public abstract int ejecutar(Casilla casillaObjectivo);
     public int calcularImpactos(int hambreZombi){
+        // Calcular cuántos dados lanzar
+        int dadosTotales = potencia + hambreZombi;
         int impactos=0;
+        for(int i=0;i < dadosTotales;i++){
+            int resultado=(int)(Math.random()*6) + 1;//Para generar numero entre 1 y 6 incluyendolos 
+            //Tengo que verificar si es impacto
+            if(resultado>=valorExito){
+                impactos++;
+                System.out.println("Es impacto");
+            }else{
+                System.out.println("impacto fallido");
+            }
+        }
+        System.out.println("Total de impactos:"+ impactos);
         return impactos;
     }
     public void estaEnAlcance(Casilla casillaZombi,Casilla casillaObjectivo){
         
     }
     //toString
-}
+    @Override
+    public String toString(){
+        return nombre + " (Potencia:" + potencia + ", Éxito:" + valorExito + "+ Alcance:" + alcance + ")";
+    }
+    }
