@@ -7,7 +7,7 @@ package juego;
 
 /**
  *
- * @author Natalia Garcia
+ * @author Shuyi Qu
  */
 public abstract class Ataque {
     protected String nombre;
@@ -33,7 +33,7 @@ public abstract class Ataque {
 
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // ejecutará el ataque y devolverá los impactos generados
-    public abstract int ejecutar(Casilla casillaObjectivo);
+    public abstract boolean ejecutar(Casilla casillaObjectivo);
     public int calcularImpactos(int hambreZombi){
         // Calcular cuántos dados lanzar
         int dadosTotales = potencia + hambreZombi;
@@ -51,7 +51,13 @@ public abstract class Ataque {
         System.out.println("Total de impactos:"+ impactos);
         return impactos;
     }
-    public void estaEnAlcance(Casilla casillaZombi,Casilla casillaObjectivo){
+    //Para saber si una casilla objetivo esta dentro de alcance
+    public boolean estaEnAlcance(Casilla casillaZombi,Casilla casillaObjetivo){
+        //fórmula:|x2-x1| + |y2-y1|,distancia Manhattan
+        int distanciaX = Math.abs(casillaObjetivo.getCoordenadaX() - casillaZombi.getCoordenadaX());
+        int distanciaY= Math.abs(casillaObjetivo.getCoordenadaY()- casillaZombi.getCoordenadaY());
+        int distancia= distanciaX + distanciaY;
+        return distancia<=alcance;
         
     }
     //toString

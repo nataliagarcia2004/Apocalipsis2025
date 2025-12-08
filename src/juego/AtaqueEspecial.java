@@ -7,18 +7,30 @@ package juego;
 
 /**
  *
- * @author Natalia Garcia
+ * @author Shuyi Qu
  */
+import java.util.ArrayList;
+import java.util.List;
 public class AtaqueEspecial extends Ataque{
-    public AtaqueEspecial(String nombre,int potencia, int valorExito, int alcance) {
+    private int idAtaque;
+    public AtaqueEspecial(int idA,String nombre,int potencia, int valorExito, int alcance) {
         super(nombre,potencia, valorExito, alcance);
+        this.idAtaque=idA;
         // LA CONFIGURACIÓN FINAL VIENE DEL IMPORTADOR
     }
-
+    //get
+    public int getIdAtaque(){
+        return idAtaque;
+    }
+//priorizar humanos
+    public List <Humano> priorizarHumano(List <Entidad> ocupantes){
+        List <Humano> prior= new ArrayList<>();
+        return prior;
+    }
     @Override
-    public int ejecutar(Casilla casillaDestino) {
+    public boolean ejecutar(Casilla casillaDestino) {
         // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
         // aplicar reglas especiales de impacto y prioridades
-        return potencia;
+        return false;
     }
 }
