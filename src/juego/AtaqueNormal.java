@@ -20,7 +20,7 @@ public class AtaqueNormal extends Ataque {
     }
 
     @Override
-    public boolean ejecutar(Casilla casillaDestino) {
+    public boolean ejecutar(Zombi zombi,Casilla casillaDestino) {
         // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
         // hacer tirada de dado y devolver impactos si acierta
         return false;

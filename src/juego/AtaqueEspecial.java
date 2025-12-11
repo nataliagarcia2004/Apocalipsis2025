@@ -28,7 +28,7 @@ public class AtaqueEspecial extends Ataque{
         return prior;
     }
     @Override
-    public boolean ejecutar(Casilla casillaDestino) {
+    public boolean ejecutar(Zombi zombi,Casilla casillaDestino) {
         // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
         // aplicar reglas especiales de impacto y prioridades
         return false;
