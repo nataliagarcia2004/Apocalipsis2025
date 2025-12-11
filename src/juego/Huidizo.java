@@ -10,5 +10,5 @@ package juego;
  * @author Natalia Garcia
  */
 public class Huidizo {
-
+//el metodo incrementarAcciones se llama desde Huidizo.serComido(),ya que sercomido por Zombi,este tendra acciones extra
 }

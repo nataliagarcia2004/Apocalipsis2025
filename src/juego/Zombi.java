@@ -50,17 +50,31 @@ public class Zombi extends Entidad {
     public int getHambre(){
         return hambre;
     }
-    public void setHambre(int ham){
-        this.hambre=ham; //esta mal
-        if(hambre>=MAX_HAMBRE){
-            estado=Estado.ELIMINADO;
-        }
+    public void setHambre(int ham){ 
+        if(ham<0)hambre=0;
+        if(ham>=MAX_HAMBRE)ham=MAX_HAMBRE;
+        this.hambre=ham;
     }
     public int getMaxAcciones(){
         return maxAcciones;
     }
     public int getAccionesRestantes(){
         return accionesRestantes;
+    }
+    public List<Comestible> getComestiblesConsumidos(){
+        return new ArrayList<>(comestiblesConsumidos);
+    }
+    public List <Humano> getHumanosEliminaados(){
+        return new ArrayList<>(humanosEliminados);
+    }
+    public AtaqueNormal getAtaqueNormal(){
+        return ataqueNormal;
+    }
+    public AtaqueEspecial getAtaqueEspecial(){
+        return ataqueEspecial;
+    }
+    public void setAtaqueEspecial(AtaqueEspecial a){
+        this.ataqueEspecial=a;
     }
     
     /*Inicia el turno de zombi y puede realizar 3 acciones
@@ -69,10 +83,22 @@ public class Zombi extends Entidad {
     - Mostrar información del turno
     */
     public void iniciarTurno(){
+        System.out.println("Empieza el turno de"+ getNombre());
+        //verificamos el hambre
+        if(hambre>MAX_HAMBRE){
+            System.out.println(getNombre()+ "tiene hambre maxima ,se sufrira una herida");
+            recibirHerida(1);
+        }
+        //restaurar acciones
+        accionesRestantes=maxAcciones;
         
     }
     //Cuando finaliza su turno,se incrementa una unidad de hambre
- 
+    public void finalizarTurno(){
+        if(hambre<MAX_HAMBRE)
+            hambre++;
+        System.out.println(getNombre()+ "finaliza su turno.Hambre"+ hambre);
+    }
     /*Acción 1 : mover
     - +1 acción mover a casilla adyacente
     -  +1acción extra por cada humano que hay en la casilla actual
@@ -91,14 +117,33 @@ public class Zombi extends Entidad {
         gastar una acción
         generar comida*/
     public void buscarComida(){
-        
+        if(estado!=estado.ACTIVO || accionesRestantes <= 0){
+            System.out.println(getNombre()+ "Ya no tiene acciones disponibles,no puede buscar comida");
+            return;
+        }
+        accionesRestantes--;
+        System.out.println(getNombre() + "buscando comida...");
+        //El juego gestiona la aparicion aleatoria
+        //juego.generarComidaAleatoria();
     }
-    //Atacar
+    //Atacar pero puede eligir ataque si es normal o especial
     public void atacar(Casilla casillaObjetivo,Ataque ataqueSeleccionado){
-        
+        if(estado!=estado.ACTIVO || accionesRestantes <= 0){
+            System.out.println(getNombre()+ "Ya no tiene acciones disponibles,no puede atacar");
+           return;
+        }
+        accionesRestantes--;
+        ataqueSeleccionado.ejecutar(this,casillaObjetivo);//error
     }
-    //Recibir herida
+    //Recibir herida,El zombi es eliminado al recibir quinta herida
     public void recibirHerida(int cantidad){
+        heridas+=cantidad;
+        System.out.println(getNombre() + "recibe "+ cantidad + "heridas.Total de heridas"+ heridas);
+        if(heridas>=MAX_HERIDAS){
+            estado= estado.ELIMINADO;
+            System.out.println(getNombre() + "Ha sido Eliminado");
+        }
+        
     }
     //No hacer nada
     public void noHacerNada(){
@@ -112,4 +157,14 @@ public class Zombi extends Entidad {
     public void registrarComestible(Comestible c){
         comestiblesConsumidos.add(c);
     }
+    //Registrar humanos eliminados
+    public void registrarHumanoEliminado(Humano humano){
+        humanosEliminados.add(humano);
+    }
+    //si Zombi come un huidizo,obtendra acciones extra
+    public void incrementarAcciones(){
+        maxAcciones++;
+        System.out.println(getNombre()+ "Ha conseguido tener"+ maxAcciones + "acciones por turno");
+    }
+    
 }
