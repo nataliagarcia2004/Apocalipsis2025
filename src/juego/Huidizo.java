@@ -21,7 +21,7 @@ public class Huidizo extends Humano {
 
         Casilla salida = juego.getTablero().getCasillaSalida();
 
-        // 1) Si ya está en la salida → abandona el tablero
+        // 1- si ya está en la salida abandona el tablero
         if (casillaActual.equals(salida)) {
             System.out.println(nombre + " llega a la salida y se escapa del juego.");
             casillaActual.eliminarEntidad(this);
@@ -29,7 +29,7 @@ public class Huidizo extends Humano {
             return;
         }
 
-        // 2) Si NO está en la salida → moverse hacia ella
+        //2- Si NO está en la salida moverse hacia ella
         Casilla siguiente =
                 juego.getTablero().calcularSiguienteCasillaHaciaSalida(casillaActual);
 
@@ -51,18 +51,16 @@ public class Huidizo extends Humano {
         eliminado = true;
         aguante = 0;
 
-        // Remove from board
         casillaActual.eliminarEntidad(this);
 
-        // Registrar en el zombi
+        //registrar en el zombi
         z.registrarComestible(this);
         z.registrarHumanoEliminado(this);
 
-        // --- EFECTOS ESPECIALES SEGÚN ENUNCIADO ---
-        // 1) Todos los humanos (excepto ingeniero) reducen el hambre a 0
+        //todos los humanos (excepto ingeniero) reducen el hambre a 0
         z.setHambre(0);
 
-        // 2) El Huidizo añade una acción extra permanente al zombi
+        //El Huidizo añade una acción extra permanente al zombi
         z.incrementarAcciones();
 
         System.out.println(nombre + 
