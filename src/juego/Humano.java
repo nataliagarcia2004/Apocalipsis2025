@@ -83,6 +83,7 @@ public abstract class Humano extends Entidad implements Comestible  {
         z.registrarComestible(this);          
         z.registrarHumanoEliminado(this);
         
+        z.setHambre(0);
         System.out.println(nombre + " ha sido comido por el zombi " + z.getNombre());
     }
     

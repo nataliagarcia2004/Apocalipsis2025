@@ -98,7 +98,9 @@ public class Combatiente extends Humano {
         z.registrarComestible(this);
         z.registrarHumanoEliminado(this);
 
-        System.out.println(nombre + " ha sido devorado por " + z.getNombre());
+        z.setHambre(0);
+        System.out.println(nombre + " (" + tipo + ") ha sido devorado por " 
+                       + z.getNombre() + ". El hambre del zombi se reduce a 0.");
     }
 }
     

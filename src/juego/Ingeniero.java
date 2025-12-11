@@ -108,6 +108,15 @@ public class Ingeniero extends Humano{
             System.out.println(nombre + 
                 " (Ingeniero) es comido, pero esta vez no provoca herida.");
         }
+        
+        if (z.getHambre() >= 4) {
+        z.setHambre(z.getHambre() - 2);
+        System.out.println("El hambre de " + z.getNombre() + 
+            " se reduce en 2 puntos por comerse al Ingeniero.");
+        } else {
+        System.out.println("El hambre de " + z.getNombre() + 
+            " NO se reduce porque era menor de 4.");
+        }
     }
 
     
