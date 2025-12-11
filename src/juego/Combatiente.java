@@ -5,113 +5,100 @@
 
 package juego;
 
+import java.util.List;
+import java.util.Random;
+
 /**
  *
  * @author Natalia Garcia
  */
-public class Combatiente extends Humano{
-    // Tipos posibles del combatiente
-    public enum TipoCombatiente {
+public class Combatiente extends Humano {
+
+    public enum Tipo {
         SOLDADO,
         ESPECIALISTA,
-        BLINDADO,
-        INGENIERO
+        BLINDADO
     }
-    
-    private TipoCombatiente tipo;
-    
-    public Combatiente(String nombre, Casilla casillaInicial,
-                       int aguante, int activaciones,
-                       TipoCombatiente tipo) {
 
-        super(nombre, casillaInicial, aguante, activaciones);
+    private Tipo tipo;
+    private static final Random rand = new Random();
+
+    public Combatiente(String nombre, Casilla casillaInicial, Tipo tipo) {
+        super(nombre, casillaInicial,
+                asignarAguante(tipo),
+                asignarActivaciones(tipo));
+
         this.tipo = tipo;
     }
 
-    public TipoCombatiente getTipo() {
+    private static int asignarAguante(Tipo t) {
+        switch (t) {
+            case SOLDADO: return 1;
+            case ESPECIALISTA: return 1;
+            case BLINDADO: return 2;
+            default: return 1;
+        }
+    }
+
+    private static int asignarActivaciones(Tipo t) {
+        switch (t) {
+            case SOLDADO: return 1;
+            case ESPECIALISTA: return 2;
+            case BLINDADO: return 1;
+            default: return 1;
+        }
+    }
+
+    public Tipo getTipo() {
         return tipo;
     }
 
     @Override
-    public void mover(Casilla casillaDestino) {
-        // se tiene que revisar despues cunaod juego implementado
-        /*
-        if (casillaDestino == null) return;
+    public void activar(Juego juego) {
+        if (eliminado) return;
 
-        Tablero tablero = Tablero.getInstancia();
-        tablero.moverEntidad(this, casillaDestino); // mover en tablero
+        for (int i = 0; i < activaciones; i++) {
 
-        this.casillaActual = casillaDestino;
+            // 1- si hay zombis atacar
+            List<Zombi> zombis = casillaActual.getZombis();
+            if (!zombis.isEmpty()) {
+                Zombi objetivo = zombis.get(rand.nextInt(zombis.size()));
+                atacar(objetivo);
+                return;
+            }
 
-        System.out.println(nombre + " se mueve hacia " + casillaDestino);
-        */
+            //2-si no moverse hacia el zombi más cercano
+            Casilla destino = juego.getTablero()
+                    .calcularSiguienteCasillaHaciaZombi(casillaActual);
+
+            mover(destino);
+        }
     }
 
     @Override
-    public void activar() {
-        /*
-        // se tiene que revisar despues cunaod juego implementado
-        Tablero tablero = Tablero.getInstancia();
-
-        // 1. Buscar zombis en la casilla actual
-        List<Zombi> zombisAqui = tablero.obtenerZombisEnCasilla(casillaActual);
-
-        switch (tipo) {
-
-
-            case SOLDADO:
-            case ESPECIALISTA:
-            case BLINDADO:
-
-                if (!zombisAqui.isEmpty()) {
-                    // Atacar zombi aleatorio
-                    Zombi objetivo = zombisAqui.get(random.nextInt(zombisAqui.size()));
-
-                    System.out.println(nombre + " ataca a " + objetivo.getNombre());
-                    objetivo.recibirHerida(1);
-
-                } else {
-                    // No hay zombis → moverse hacia el más cercano
-                    Casilla destino = tablero.obtenerCasillaMasCercanaConZombi(casillaActual);
-                    mover(destino);
-                }
-                break;
-
-            //ingeniero tieneataque especial
-            case INGENIERO:
-
-                if (!zombisAqui.isEmpty()) {
-                    // 2 heridas si está en la misma casilla
-                    Zombi objetivo = zombisAqui.get(random.nextInt(zombisAqui.size()));
-                    System.out.println(nombre + " (Ingeniero) inflige 2 heridas a " + objetivo.getNombre());
-                    objetivo.recibirHerida(2);
-
-                } else {
-                    // Buscar zombis a distancia 1
-                    List<Zombi> zombisDist1 = tablero.obtenerZombisEnRadio(casillaActual, 1);
-
-                    if (!zombisDist1.isEmpty()) {
-                        // 1 herida a distancia
-                        Zombi objetivo = zombisDist1.get(random.nextInt(zombisDist1.size()));
-                        System.out.println(nombre + " (Ingeniero) inflige 1 herida a distancia a " + objetivo.getNombre());
-                        objetivo.recibirHerida(1);
-
-                    } else {
-                        // Si no hay zombis cerca → moverse 2 casillas hacia el zombi más cercano
-                        Casilla destino = tablero.obtenerCasillaMasCercanaConZombi(casillaActual);
-
-                        // Suponemos que el tablero calculará la ruta
-                        System.out.println(nombre + " (Ingeniero) se mueve 2 casillas hacia " + destino);
-
-                        mover(destino);  
-                    }
-                }
-                break;
-        }
+    public void mover(Casilla destino) {
+        if (destino == null) return;
+        casillaActual.eliminarEntidad(this);
+        destino.agregarEntidad(this);
+        casillaActual = destino;
     }
-        
+
+    private void atacar(Zombi z) {
+        //los tres tipos infligen SIEMPRE 1 herida
+        z.recibirHerida(1);
+        System.out.println(nombre + " (" + tipo + ") inflige 1 herida a " + z.getNombre());
     }
-*/
+
+    @Override
+    public void serComido(Zombi z) {
+        eliminado = true;
+        aguante = 0;
+        casillaActual.eliminarEntidad(this);
+
+        z.registrarComestible(this);
+        z.registrarHumanoEliminado(this);
+
+        System.out.println(nombre + " ha sido devorado por " + z.getNombre());
     }
 }
     

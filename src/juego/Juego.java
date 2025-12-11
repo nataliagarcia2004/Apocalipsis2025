@@ -11,5 +11,15 @@ package juego;
  */
 public class Juego {
     ///debe hacer registarr herida para que humano funcione su metodo de:  public void registrarHerida(Zombi z) { 
+    // natalia: lo he metido para que combatiente funcione
+    private Tablero tablero;
 
+    public Juego(int numeroZombis) {
+        this.tablero = new Tablero(numeroZombis);
+    }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+   
 }

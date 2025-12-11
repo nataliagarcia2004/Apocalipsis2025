@@ -16,8 +16,11 @@ public class Zombi extends Entidad {
     private List<Humano>humanosEliminados;//Lista vacia para registrar
     private int heridas;//contador de heridas
     private int hambre;//nivel de hambre entre 0 y 5
-    private int maxAcciones;//inicialmente serán 3 acciones
-    private int accionesRestantes;//Acciones disponibles en este turno
+    ///private int maxAcciones;//inicialmente serán 3 acciones
+    //añadido natalia:
+    private int maxAcciones = 3;
+    //private int accionesRestantes;//Acciones disponibles en este turno
+    private int accionesRestantes = 3;
     private static final int MAX_HERIDAS=5;//5 heridas = eliminado
     private static final int MAX_HAMBRE=5;//hambre máximo permitido
     private AtaqueEspecial ataqueEspecial;//cada zombi tiene su propio ataque especial

@@ -40,7 +40,7 @@ public abstract class Humano extends Entidad implements Comestible  {
     public abstract void mover(Casilla casillaDestino);
 
     ///Cada subtipo define su comportamiento al activarse, se implementara en los subtipos
-    public abstract void activar();
+    public abstract void activar(Juego juego);
     
  
     
@@ -49,6 +49,7 @@ public abstract class Humano extends Entidad implements Comestible  {
         if (impactos >= aguante) {
             eliminado = true;
             aguante = 0;
+            casillaActual.eliminarEntidad(this);
             System.out.println(nombre + " ha sido eliminado por un ataque directo.");
         } else {
             System.out.println(nombre + " recibió ataques, pero sigue vivo.");
@@ -62,6 +63,9 @@ public abstract class Humano extends Entidad implements Comestible  {
         if (aguante <= 0) {
             eliminado = true;
             aguante = 0;
+            casillaActual.eliminarEntidad(this);
+            
+            z.registrarHumanoEliminado(this);
             System.out.println(nombre + " ha muerto por heridas infligidas por el zombi " + z.getNombre());
         } else {
             System.out.println(nombre + " ha recibido 1 herida de " + z.getNombre() +
@@ -74,9 +78,12 @@ public abstract class Humano extends Entidad implements Comestible  {
     public void serComido(Zombi z) {
         eliminado = true;
         aguante = 0;
+        
+        casillaActual.eliminarEntidad(this);  
+        z.registrarComestible(this);          
+        z.registrarHumanoEliminado(this);
+        
         System.out.println(nombre + " ha sido comido por el zombi " + z.getNombre());
     }
-    
-    
     
 }
