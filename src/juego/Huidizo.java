@@ -46,6 +46,8 @@ public class Huidizo extends Humano {
         casillaActual = destino;
     }
 
+    
+    
     @Override
     public void serComido(Zombi z) {
         eliminado = true;
