@@ -17,6 +17,7 @@ public class AtaqueEspecial extends Ataque{
         super(nombre,potencia, valorExito, alcance);
         this.idAtaque=idA;
         // LA CONFIGURACIÓN FINAL VIENE DEL IMPORTADOR
+        
     }
     //get
     public int getIdAtaque(){

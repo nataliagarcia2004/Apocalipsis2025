@@ -109,7 +109,26 @@ public class Zombi extends Entidad {
    */ 
     @Override
     public void mover(Casilla casillaDestino){
+        //Verifico si puede mover
+        if(estado!=Estado.ACTIVO || accionesRestantes<=0){
+           System.out.println(getNombre() + "Ya no tiene acciones para mover");
+           return;
+        }
         
+        //Contar humano en casilla actual
+        int humanoC=0;
+        for(Entidad e: getCasillaActual().getOcupantes()){
+            if(e instanceof Humano){
+                humanoC++;
+            }
+        }
+        //Gastar una accion por humano
+        int gasto= 1+ humanoC;
+        // En el caso de que haya 4 humanos o más, no se puede mover, está rodeado
+        if (humanoC>=4){
+            System.out.println(getNombre()+ "No puede mover,está rodeado de"+ humanoC+"Humanos");
+        }
+        // Verificar acciones suficientes
     }
     /*Buscar comida,esta acción hará que aparezca elementos aleatorios
     -un humano huidizo (30% de probabilidad), 
@@ -120,7 +139,7 @@ public class Zombi extends Entidad {
         gastar una acción
         generar comida*/
     public void buscarComida(){
-        if(estado!=estado.ACTIVO || accionesRestantes <= 0){
+        if(estado!=Estado.ACTIVO || accionesRestantes <= 0){
             System.out.println(getNombre()+ "Ya no tiene acciones disponibles,no puede buscar comida");
             return;
         }
@@ -128,15 +147,16 @@ public class Zombi extends Entidad {
         System.out.println(getNombre() + "buscando comida...");
         //El juego gestiona la aparicion aleatoria
         //juego.generarComidaAleatoria();
+        
     }
     //Atacar pero puede eligir ataque si es normal o especial
     public void atacar(Casilla casillaObjetivo,Ataque ataqueSeleccionado){
-        if(estado!=estado.ACTIVO || accionesRestantes <= 0){
+        if(estado!=Estado.ACTIVO || accionesRestantes <= 0){
             System.out.println(getNombre()+ "Ya no tiene acciones disponibles,no puede atacar");
-           return;
+            return ;
         }
         accionesRestantes--;
-        ataqueSeleccionado.ejecutar(this,casillaObjetivo);//error
+        ataqueSeleccionado.ejecutar(this,casillaObjetivo);
     }
     //Recibir herida,El zombi es eliminado al recibir quinta herida
     public void recibirHerida(int cantidad){
