@@ -27,7 +27,9 @@ public class AtaqueEspecial extends Ataque{
     public List <Humano> priorizarHumano(List <Entidad> ocupantes){
         List <Humano> prior= new ArrayList<>();
         return prior;
+        
     }
+    
     @Override
     public boolean ejecutar(Zombi zombi,Casilla casillaDestino) {
         // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:

@@ -129,6 +129,16 @@ public class Zombi extends Entidad {
             System.out.println(getNombre()+ "No puede mover,está rodeado de"+ humanoC+"Humanos");
         }
         // Verificar acciones suficientes
+        if(accionesRestantes<=gasto){
+            System.out.println(getNombre()+"No tiene suficientes accciones.");
+        }
+        // Verificar que es adyacente
+        getCasillaActual().eliminarEntidad(this);
+        setCasillaActual(casillaDestino);
+        casillaDestino.agregarEntidad(this);
+        // Realizar movimiento
+        accionesRestantes-=gasto;
+        System.out.println(getNombre()+ "se mueve a (" + casillaDestino.getCoordenadaX() + casillaDestino.getCoordenadaY()+").Sus acciones:"+accionesRestantes);
     }
     /*Buscar comida,esta acción hará que aparezca elementos aleatorios
     -un humano huidizo (30% de probabilidad), 
