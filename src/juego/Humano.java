@@ -15,7 +15,7 @@ public abstract class Humano extends Entidad implements Comestible  {
     protected int activaciones;   // Número de acciones que hace por turno
     
     // Indica si el humano ya está eliminado del juego
-    protected boolean eliminado = false;
+    protected boolean eliminado = false;//REDUDANTE LIS
    
     public Humano(String nombre, Casilla casillaInicial, int aguante, int activaciones) {
         super(nombre, casillaInicial);
@@ -33,6 +33,7 @@ public abstract class Humano extends Entidad implements Comestible  {
     
     public boolean estaEliminado() {
         return eliminado;
+        //return aguante <=0;
     }
     
     // Cada tipo de humano tendrá una manera diferente de moverse, se implementará en los subtipos
@@ -47,7 +48,7 @@ public abstract class Humano extends Entidad implements Comestible  {
     // MÉTODOS COMUNES PARA TODOS LOS HUMANOS
     public void recibirAtaque(int impactos) {
         if (impactos >= aguante) {
-            eliminado = true;
+            eliminado = true;//quitar
             aguante = 0;
             casillaActual.eliminarEntidad(this);
             System.out.println(nombre + " ha sido eliminado por un ataque directo.");
@@ -73,7 +74,17 @@ public abstract class Humano extends Entidad implements Comestible  {
         }
 
     }
-    
+    //EL METODO REGISTRARHERIDA Y RECIBIR ATAQUE SE PUEDE UNIFICAR
+    /*public void recibirImpactos(int impactos, Zombi agresor) {
+    if (impactos >= aguante) {
+        aguante = 0;
+        casillaActual.eliminarEntidad(this);
+        agresor.registrarEliminacion(this);  // Siempre registrar
+        System.out.println(getNombre() + " eliminado por " + agresor.getNombre());
+    } else {
+        System.out.println(getNombre() + " sobrevive (" + impactos + "/" + aguante + " impactos)");
+    }*/
+
     @Override
     public void serComido(Zombi z) {
         eliminado = true;
@@ -81,7 +92,7 @@ public abstract class Humano extends Entidad implements Comestible  {
         
         casillaActual.eliminarEntidad(this);  
         z.registrarComestible(this);          
-        z.registrarHumanoEliminado(this);
+        z.registrarHumanoEliminado(this);//MAL,PORQUE SERCOMIDO = DEVORADO POR ZOMBI PERO ELIMINADO ES DE ATAQUE ESPECIAL
         
         z.setHambre(0);
         System.out.println(nombre + " ha sido comido por el zombi " + z.getNombre());
