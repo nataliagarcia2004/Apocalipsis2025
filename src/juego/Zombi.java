@@ -161,7 +161,7 @@ public class Zombi extends Entidad {
         verificar si hay acción
         gastar una acción
         generar comida*/
-    public void buscarComida(){
+    public void buscarComida(Juego juego){
         if(estado!=Estado.ACTIVO || accionesRestantes <= 0){
             System.out.println(getNombre()+ "Ya no tiene acciones disponibles,no puede buscar comida");
             return;
@@ -169,7 +169,7 @@ public class Zombi extends Entidad {
         accionesRestantes--;
         System.out.println(getNombre() + "buscando comida...");
         //El juego gestiona la aparicion aleatoria
-        //juego.generarComidaAleatoria();
+        juego.generarComidaAleatoria();
         
     }
     //Atacar pero puede eligir ataque si es normal o especial
