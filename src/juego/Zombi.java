@@ -54,9 +54,13 @@ public class Zombi extends Entidad {
         return hambre;
     }
     public void setHambre(int ham){ 
-        if(ham<0)hambre=0;
-        if(ham>=MAX_HAMBRE)ham=MAX_HAMBRE;
+        if(ham<0){
+            this.hambre=0;
+        }else if(ham>=MAX_HAMBRE){
+            this.hambre=MAX_HAMBRE;
+        }else{
         this.hambre=ham;
+        }
     }
     public int getMaxAcciones(){
         return maxAcciones;
@@ -67,7 +71,7 @@ public class Zombi extends Entidad {
     public List<Comestible> getComestiblesConsumidos(){
         return new ArrayList<>(comestiblesConsumidos);
     }
-    public List <Humano> getHumanosEliminaados(){
+    public List <Humano> getHumanosEliminados(){
         return new ArrayList<>(humanosEliminados);
     }
     public AtaqueNormal getAtaqueNormal(){
@@ -127,16 +131,25 @@ public class Zombi extends Entidad {
         // En el caso de que haya 4 humanos o más, no se puede mover, está rodeado
         if (humanoC>=4){
             System.out.println(getNombre()+ "No puede mover,está rodeado de"+ humanoC+"Humanos");
+            return;
         }
         // Verificar acciones suficientes
         if(accionesRestantes<=gasto){
             System.out.println(getNombre()+"No tiene suficientes accciones.");
+            return;
         }
         // Verificar que es adyacente
+        int distanciaX=Math.abs(getCasillaActual().getCoordenadaX()- casillaDestino.getCoordenadaX());
+        int distanciaY= Math.abs(getCasillaActual().getCoordenadaY() - casillaDestino.getCoordenadaY());
+        int distancia= distanciaX + distanciaY;
+        if(distancia!=1){
+            System.out.println("La casilla no es adyacente");
+            return;
+        }
+        // Realizar movimiento
         getCasillaActual().eliminarEntidad(this);
         setCasillaActual(casillaDestino);
         casillaDestino.agregarEntidad(this);
-        // Realizar movimiento
         accionesRestantes-=gasto;
         System.out.println(getNombre()+ "se mueve a (" + casillaDestino.getCoordenadaX() + casillaDestino.getCoordenadaY()+").Sus acciones:"+accionesRestantes);
     }
