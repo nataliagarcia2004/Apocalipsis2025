@@ -15,7 +15,7 @@ public abstract class Humano extends Entidad implements Comestible  {
     protected int activaciones;   // Número de acciones que hace por turno
     
     // Indica si el humano ya está eliminado del juego
-    protected boolean eliminado = false;//REDUDANTE LIS
+    protected boolean eliminado = false;
    
     public Humano(String nombre, Casilla casillaInicial, int aguante, int activaciones) {
         super(nombre, casillaInicial);
@@ -33,7 +33,6 @@ public abstract class Humano extends Entidad implements Comestible  {
     
     public boolean estaEliminado() {
         return eliminado;
-        //return aguante <=0;
     }
     
     // Cada tipo de humano tendrá una manera diferente de moverse, se implementará en los subtipos
