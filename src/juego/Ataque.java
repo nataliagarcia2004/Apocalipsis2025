@@ -33,7 +33,7 @@ public abstract class Ataque {
 
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // ejecutará el ataque y devolverá los impactos generados
-    public abstract boolean ejecutar(Zombi zombi,Casilla casillaObjectivo);
+    public abstract boolean ejecutar(Zombi zombi,Casilla casillaObjetivo);
     public int calcularImpactos(int hambreZombi){
         // Calcular cuántos dados lanzar
         int dadosTotales = potencia + hambreZombi;

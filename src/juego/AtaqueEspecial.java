@@ -23,17 +23,80 @@ public class AtaqueEspecial extends Ataque{
     public int getIdAtaque(){
         return idAtaque;
     }
-//priorizar humanos
-    public List <Humano> priorizarHumano(List <Entidad> ocupantes){
+//priorizar humanos Sin incluir conejo "El Ataque Especial ignora a los Conejos"
+    private List <Humano> priorizarHumano(List <Entidad> ocupantes){
         List <Humano> prior= new ArrayList<>();
+        //1.Ingeniero
+        for(Entidad e : ocupantes){
+            if(e instanceof Ingeniero){
+                prior.add((Humano)e);
+            }
+           
+                    }
+         //2.Soldados
+            for(Entidad e: ocupantes){
+                if(e instanceof Combatiente){
+                    Combatiente c= (Combatiente)e;
+                    if("SOLDADO".equals(c.getTipo())){
+                        prior.add((Combatiente)e);
+                }
+            }
+        }
+        //3.Blindados
+        for(Entidad e : ocupantes){
+            if(e instanceof Combatiente c){
+                if("BLINDADO".equals(c.getTipo())){
+                    prior.add((Combatiente)e);
+                }
+            }
+        }
+            //4.Especialistas
+            for(Entidad e : ocupantes){
+            if(e instanceof Combatiente){
+                Combatiente c= (Combatiente)e;
+                if("ESPECIALISTA".equals(c.getTipo())){
+                    prior.add((Combatiente)e);
+                }
+            }
+        }
+            //5.Humanos huidizos
+             for(Entidad e : ocupantes){
+                 if(e instanceof Huidizo){
+                     prior.add((Humano)e);
+                 }
+             }
         return prior;
         
     }
     
     @Override
-    public boolean ejecutar(Zombi zombi,Casilla casillaDestino) {
+    public boolean ejecutar(Zombi zombi,Casilla casillaObjetivo) {
+        System.out.println(zombi.getNombre() + "usa" + getNombre());
         // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
-        // aplicar reglas especiales de impacto y prioridades
+        //Verificar alcance (puede ser > 0)
+        if(!estaEnAlcance(zombi.getCasillaActual(),casillaObjetivo)){
+            System.err.println("Fuera de alcance");
+        }
+        //Obtener SOLO humanos 
+        List<Humano> objetivos = priorizarHumano(casillaObjetivo.getOcupantes());
+        if(objetivos.isEmpty()){
+            System.out.println("No hay humanos");
+            return false;
+        }
+        //Calcular impactos
+        int impactos= calcularImpactos(zombi.getHambre());
+        if(impactos==0){
+            System.out.println("Sin impactos,el ataque se falla");
+            return false;
+        }
+        
+        //Repartir impactos
+        
+        return repartirImpactos(zombi,objetivos,impactos,casillaObjetivo);
+    }
+    private boolean repartirImpactos(Zombi zombi, List<Humano> objetivos, int impactos, Casilla casilla){
+        
         return false;
     }
+    
 }

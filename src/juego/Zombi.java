@@ -20,7 +20,7 @@ public class Zombi extends Entidad {
     //añadido natalia:
     private int maxAcciones = 3;
     //private int accionesRestantes;//Acciones disponibles en este turno
-    private int accionesRestantes = 3;
+    private int accionesRestantes;
     private static final int MAX_HERIDAS=5;//5 heridas = eliminado
     private static final int MAX_HAMBRE=5;//hambre máximo permitido
     private AtaqueEspecial ataqueEspecial;//cada zombi tiene su propio ataque especial
@@ -88,7 +88,7 @@ public class Zombi extends Entidad {
     public void iniciarTurno(){
         System.out.println("Empieza el turno de"+ getNombre());
         //verificamos el hambre
-        if(hambre>MAX_HAMBRE){
+        if(hambre>=MAX_HAMBRE){
             System.out.println(getNombre()+ "tiene hambre maxima ,se sufrira una herida");
             recibirHerida(1);
         }
