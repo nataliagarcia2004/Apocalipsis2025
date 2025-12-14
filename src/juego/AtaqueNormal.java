@@ -25,6 +25,7 @@ public class AtaqueNormal extends Ataque {
         //Verificar alcance (alcance 0 = misma casilla)
          if(!estaEnAlcance(zombi.getCasillaActual(),casillaObjetivo)){
             System.err.println("devora solo funciona en casilla actual");
+            return false;
         }
         //Obtener objetivos priorizados
         List<Comestible> objetivos = priorizar(casillaObjetivo.getOcupantes());

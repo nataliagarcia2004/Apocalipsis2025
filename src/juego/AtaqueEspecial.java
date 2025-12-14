@@ -91,12 +91,38 @@ public class AtaqueEspecial extends Ataque{
         }
         
         //Repartir impactos
-        
-        return repartirImpactos(zombi,objetivos,impactos,casillaObjetivo);
+        int eliminados=repartirImpactos(zombi,objetivos,impactos,casillaObjetivo);
+        if(eliminados>0){
+            System.out.println(eliminados+"Humanos eliminados");
+            return true;
+        }else{
+            System.out.println("El ataque falló");
+            return false;
+        }
     }
-    private boolean repartirImpactos(Zombi zombi, List<Humano> objetivos, int impactos, Casilla casilla){
-        
-        return false;
+    private int repartirImpactos(Zombi zombi, List<Humano> objetivos, int impactos, Casilla casilla){
+        //Inicializar variables
+        int impactosRestantes=impactos;
+        int Eliminado=0;
+        System.out.println("Repartiendo"+ impactos + "impactos");
+        //Recorrer objetivos EN ORDEN DE PRIORIDAD 
+        for(Humano objetivo:objetivos){
+            if(impactosRestantes<=0)break;
+            if(impactosRestantes>=objetivo.getAguante()){
+                // Eliminar
+                System.out.println(objetivo.getNombre()+ "Ha sido eliminado");
+                zombi.registrarHumanoEliminado(objetivo);
+                casilla.eliminarEntidad(objetivo);
+                impactosRestantes-=objetivo.getAguante();
+                Eliminado++;
+                
+            }else{
+                //No se puede eliminar
+                System.out.println("Impactos insuficientes,no se puede eliminar");
+                break;
+            }
+        }
+        return Eliminado;
     }
     
 }

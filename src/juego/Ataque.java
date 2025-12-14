@@ -34,22 +34,21 @@ public abstract class Ataque {
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // ejecutará el ataque y devolverá los impactos generados
     public abstract boolean ejecutar(Zombi zombi,Casilla casillaObjetivo);
-    public int calcularImpactos(int hambreZombi){
+    public int calcularImpactos(int hambreZombi) {
         // Calcular cuántos dados lanzar
         int dadosTotales = potencia + hambreZombi;
-        int impactos=0;
-        for(int i=0;i < dadosTotales;i++){
-            int resultado=(int)(Math.random()*6) + 1;//Para generar numero entre 1 y 6 incluyendolos 
-            //Tengo que verificar si es impacto
-            if(resultado>=valorExito){
+        int impactos = 0;
+
+        for (int i = 0; i < dadosTotales; i++) {
+            int resultado = (int) (Math.random() * 6) + 1;
+            if (resultado >= valorExito) {
                 impactos++;
-                System.out.println("Es impacto");
-            }else{
-                System.out.println("impacto fallido");
             }
         }
-        System.out.println("Total de impactos:"+ impactos);
+
+        System.out.println("  " + dadosTotales + " dados -> " + impactos + " impactos");
         return impactos;
+       
     }
     //Para saber si una casilla objetivo esta dentro de alcance
     public boolean estaEnAlcance(Casilla casillaZombi,Casilla casillaObjetivo){
