@@ -12,4 +12,5 @@ public interface Comestible {
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
     // aquí se define qué pasa cuando un zombi se come este objeto
     void serComido(Zombi z);
+    
 }
