@@ -52,7 +52,7 @@ public abstract class Humano extends Entidad implements Comestible  {
             casillaActual.eliminarEntidad(this);
             System.out.println(nombre + " ha sido eliminado por un ataque directo.");
         } else {
-            System.out.println(nombre + " recibió ataques, pero sigue vivo.");
+            System.out.println(nombre + " recibio ataques, pero sigue vivo.");
         }
     }
     

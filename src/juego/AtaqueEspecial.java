@@ -96,7 +96,7 @@ public class AtaqueEspecial extends Ataque{
             System.out.println(eliminados+"Humanos eliminados");
             return true;
         }else{
-            System.out.println("El ataque falló");
+            System.out.println("El ataque fallo");
             return false;
         }
     }

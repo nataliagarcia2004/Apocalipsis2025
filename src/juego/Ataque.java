@@ -62,6 +62,6 @@ public abstract class Ataque {
     //toString
     @Override
     public String toString(){
-        return nombre + " (Potencia:" + potencia + ", Éxito:" + valorExito + "+ Alcance:" + alcance + ")";
+        return nombre + " (Potencia:" + potencia + ", Exito:" + valorExito + "+ Alcance:" + alcance + ")";
     }
     }

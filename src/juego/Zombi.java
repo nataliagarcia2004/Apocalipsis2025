@@ -130,7 +130,7 @@ public class Zombi extends Entidad {
         int gasto= 1+ humanoC;
         // En el caso de que haya 4 humanos o más, no se puede mover, está rodeado
         if (humanoC>=4){
-            System.out.println(getNombre()+ "No puede mover,está rodeado de"+ humanoC+"Humanos");
+            System.out.println(getNombre()+ "No puede mover,esta rodeado de"+ humanoC+"Humanos");
             return;
         }
         // Verificar acciones suficientes

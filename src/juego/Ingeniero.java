@@ -103,7 +103,7 @@ public class Ingeniero extends Humano{
             z.recibirHerida(1);
             System.out.println(nombre + 
                 " (Ingeniero) sienta MAL al zombi " + z.getNombre() +
-                ": recibe 1 herida por la mala digestión.");
+                ": recibe 1 herida por la mala digestion.");
         } else {
             System.out.println(nombre + 
                 " (Ingeniero) es comido, pero esta vez no provoca herida.");

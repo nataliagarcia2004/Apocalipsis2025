@@ -43,12 +43,12 @@ public class Juego {
 
         int numeroZombis;
         while (true) {
-            System.out.print("Introduce número de zombis (1-4): ");
+            System.out.print("Introduce numero de zombis (1-4): ");
             numeroZombis = leerEntero();
             if (numeroZombis >= 1 && numeroZombis <= 4) {
                 break;
             }
-            System.out.println("Valor no válido. Debe estar entre 1 y 4.");
+            System.out.println("Valor no valido. Debe estar entre 1 y 4.");
         }
 
         Juego juego = new Juego(numeroZombis);
@@ -83,7 +83,7 @@ public class Juego {
 
     private static int leerEntero() {
         while (!SC.hasNextInt()) {
-            System.out.print("Introduce un número entero: ");
+            System.out.print("Introduce un numero entero: ");
             SC.next();
         }
         return SC.nextInt();
@@ -94,7 +94,7 @@ public class Juego {
     
     public Juego(int numeroZombis) {
         if (numeroZombis < 1 || numeroZombis > 4) {
-            throw new IllegalArgumentException("Número de zombis debe ser entre 1 y 4");
+            throw new IllegalArgumentException("Numero de zombis debe ser entre 1 y 4");
         }
 
         this.zombis = new ArrayList<>();
@@ -120,7 +120,7 @@ public class Juego {
         casillaInicial.agregarEntidad(zombi);
         zombis.add(zombi);
 
-        registrarEvento("Zombi '" + zombi.getNombre() + "' agregado en posición inicial (0,0)");
+        registrarEvento("Zombi '" + zombi.getNombre() + "' agregado en posicion inicial (0,0)");
 
         // 3 humanos combatientes aleatorios por zombi
         for (int i = 0; i < 3; i++) {
@@ -226,7 +226,7 @@ public class Juego {
         activarHumanos();
 
         // FASE 3: Nuevos humanos combatientes
-        registrarEvento("\n--- Fase de aparición de nuevos humanos ---");
+        registrarEvento("\n--- Fase de aparicion de nuevos humanos ---");
         for (int i = 0; i < zombis.size(); i++) {
             generarHumanoCombatienteAleatorio();
         }
@@ -263,7 +263,7 @@ public class Juego {
             System.out.println("3) Atacar (Especial)");
             System.out.println("4) Buscar comida");
             System.out.println("5) No hacer nada");
-            System.out.print("Opción: ");
+            System.out.print("Opcion: ");
 
             int opcion = leerEntero();
 
@@ -284,7 +284,7 @@ public class Juego {
                     zombi.noHacerNada();
                     break;
                 default:
-                    System.out.println("Opción no válida.");
+                    System.out.println("Opcion no válida.");
             }
 
             if (zombi.getEstado() == Estado.ELIMINADO) {
@@ -339,7 +339,7 @@ public class Juego {
     }
 
     private void activarHumanos() {
-        registrarEvento("\n--- Fase de activación de humanos ---");
+        registrarEvento("\n--- Fase de activacion de humanos ---");
         List<Humano> humanosActivos = new ArrayList<>(humanos);
 
         for (Humano humano : humanosActivos) {
@@ -439,7 +439,7 @@ public class Juego {
                         if (c != null) {
                             ultimoZombi.registrarComestible(c);
                             registrarEvento("Zombi " + ultimoZombi.getNombre() +
-                                    " registró comestible histórico: " + tipoComido);
+                                    " registro comestible historico: " + tipoComido);
                         }
                     }
                     break;
