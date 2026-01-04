@@ -7,7 +7,7 @@ package juego;
 
 /**
  *
- * @author Natalia Garcia
+ * @author Shuyi Qu
  */
 import java.util.List;
 import java.util.ArrayList;

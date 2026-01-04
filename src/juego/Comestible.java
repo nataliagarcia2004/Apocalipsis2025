@@ -6,7 +6,7 @@ package juego;
 
 /**
  *
- * @author natal
+ * @author Shuyi
  */
 public interface Comestible {
     // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:

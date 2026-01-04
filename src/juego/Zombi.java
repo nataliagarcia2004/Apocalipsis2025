@@ -34,7 +34,7 @@ public class Zombi extends Entidad {
         this.heridas=0;//inicializar contadores
         this.hambre=0;
         this.ataqueNormal= new AtaqueNormal();
-        this.ataqueEspecial= ataqueEspecial;//Asignar un ataque especial para todo
+        this.ataqueEspecial= ataqueEspecial;//Asignar un ataque especial 
         this.accionesRestantes=maxAcciones;//Empieza con todas las acciones
     }
     //get
