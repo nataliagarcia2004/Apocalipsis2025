@@ -257,7 +257,7 @@ public class Juego {
                     zombi.getCasillaActual().getCoordenadaY() + ")");
             System.out.println("Hambre: " + zombi.getHambre() + " | Heridas: " + zombi.getHeridas());
 
-            System.out.println("\nElige acción:");
+            System.out.println("\nElige accion:");
             System.out.println("1) Moverse");
             System.out.println("2) Atacar (Devorar)");
             System.out.println("3) Atacar (Especial)");
@@ -284,7 +284,8 @@ public class Juego {
                     zombi.noHacerNada();
                     break;
                 default:
-                    System.out.println("Opcion no válida.");
+                    System.out.println("Opcion no va"
+                            + "lida.");
             }
 
             if (zombi.getEstado() == Estado.ELIMINADO) {
