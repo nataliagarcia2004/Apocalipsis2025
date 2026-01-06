@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+
 package juego;
 
 /**
@@ -52,10 +53,33 @@ public class Juego {
         }
 
         Juego juego = new Juego(numeroZombis);
+         // === AÑADIDO: CREAR ATAQUES ESPECIALES PARA CADA ZOMBI ===
+    AtaqueEspecial[] ataquesEspeciales = new AtaqueEspecial[numeroZombis];
+    
+    // Crear ataques especiales según el número de zombis
+    for (int i = 0; i < numeroZombis; i++) {
+        switch(i) {
+            case 0:
+                ataquesEspeciales[i] = new AtaqueEspecial(0, "Cata Gourmet", 4, 4, 0);
+                break;
+            case 1:
+                ataquesEspeciales[i] = new AtaqueEspecial(1, "Lanzamiento de Fémur", 3, 3, 1);
+                break;
+            case 2:
+                ataquesEspeciales[i] = new AtaqueEspecial(2, "Codazo de Ultratumba Descoyuntante", 3, 2, 0);
+                break;
+            case 3:
+                ataquesEspeciales[i] = new AtaqueEspecial(3, "Escupitajo Tóxico", 2, 5, 1);
+                break;
+        }
+        
+        // Registrar el ataque en el juego
+        juego.registrarAtaqueEspecial(ataquesEspeciales[i].getIdAtaque(), ataquesEspeciales[i]);
+    }
 
         // Crear zombis con nombres básicos (se podría pedir nombre al usuario)
         for (int i = 1; i <= numeroZombis; i++) {
-            Zombi z = new Zombi("Zombi_" + i, null, null);
+            Zombi z = new Zombi("Zombi_" + i, null, ataquesEspeciales[i-1]);
             juego.agregarZombi(z);
         }
 
@@ -256,8 +280,16 @@ public class Juego {
                     zombi.getCasillaActual().getCoordenadaX() + "," +
                     zombi.getCasillaActual().getCoordenadaY() + ")");
             System.out.println("Hambre: " + zombi.getHambre() + " | Heridas: " + zombi.getHeridas());
-
-            System.out.println("\nElige accion:");
+            // === AÑADIDO: Mostrar ataques disponibles ===
+        System.out.println("Ataque normal: Devorar [Potencia: 1, Éxito: 4, Alcance: 0]");
+        if (zombi.getAtaqueEspecial() != null) {
+            Ataque especial = zombi.getAtaqueEspecial();
+            System.out.println("Ataque especial: " + especial.getNombre() + 
+                             " [Potencia: " + especial.getPotencia() + 
+                             ", Exito: " + especial.getValorExito() + 
+                             ", Alcance: " + especial.getAlcance() + "]");
+        }
+        System.out.println("\nElige accion:");
             System.out.println("1) Moverse");
             System.out.println("2) Atacar (Devorar)");
             System.out.println("3) Atacar (Especial)");
@@ -284,8 +316,7 @@ public class Juego {
                     zombi.noHacerNada();
                     break;
                 default:
-                    System.out.println("Opcion no va"
-                            + "lida.");
+                    System.out.println("Opcion no válida.");
             }
 
             if (zombi.getEstado() == Estado.ELIMINADO) {
