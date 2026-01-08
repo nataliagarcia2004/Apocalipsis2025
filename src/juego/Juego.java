@@ -3,664 +3,620 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package juego;
 
+package juego;
 /**
  *
  * @author Maria Fernandez
  */
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 public class Juego {
-
-    // Listas principales
+    private Tablero tablero;
     private List<Zombi> zombis;
     private List<Humano> humanos;
     private List<Conejo> conejos;
     private List<AtaqueEspecial> ataquesEspeciales;
-
-    private Tablero tablero;
     private int turnoActual;
     private boolean juegoTerminado;
     private boolean victoria;
-    private int contadorHumanos;
-    private int contadorConejos;
+    private int contadorHumanos = 1;
+    private int contadorConejos = 1;
     private static final Random random = new Random();
     private StringBuilder logPartida;
-
-    // Scanner compartido para la interacción por consola
     private static final Scanner SC = new Scanner(System.in);
-    
-    // MAIN 
+
     public static void main(String[] args) {
-
         System.out.println("=== APOCALIPSIS 2025 ===");
+        Juego juego = configurarPartida();
+        if (juego == null) return;
+        
+        ejecutarBucleJuego(juego);
+        juego.mostrarResultados();
+    }
 
-        int numeroZombis;
-        while (true) {
-            System.out.print("Introduce numero de zombis (1-4): ");
-            numeroZombis = leerEntero();
-            if (numeroZombis >= 1 && numeroZombis <= 4) {
-                break;
-            }
-            System.out.println("Valor no valido. Debe estar entre 1 y 4.");
+    private static Juego configurarPartida() {
+        System.out.println("1. Nueva Partida\n2. Cargar Partida");
+        System.out.print("Opcion: ");
+        int opcion = leerEntero();
+        
+        if (opcion == 2) {
+            return cargarPartidaDesdeArchivo();
+        } else {
+            return crearNuevaPartida();
         }
+    }
 
-        Juego juego = new Juego(numeroZombis);
-
-        // Crear zombis con nombres básicos (se podría pedir nombre al usuario)
-        for (int i = 1; i <= numeroZombis; i++) {
-            Zombi z = new Zombi("Zombi_" + i, null, null);
-            juego.agregarZombi(z);
+    private static Juego cargarPartidaDesdeArchivo() {
+        System.out.print("Ruta archivo: ");
+        String ruta = SC.next();
+        Juego juego = new Juego(1);
+        try {
+            juego.importarPartida(ruta);
+            return juego;
+        } catch (IOException e) {
+            System.out.println("Error al cargar: " + e.getMessage());
+            return null;
         }
+    }
 
-        // Bucle principal
-        while (!juego.isJuegoTerminado()) {
-            juego.ejecutarTurno();
-            // Permitir salir manualmente
-            System.out.print("\n¿Continuar? (S/N): ");
-            String resp = SC.next().trim().toUpperCase();
-            if (resp.equals("N")) {
-                juego.finalizarJuego();
-                break;
-            }
+    private static Juego crearNuevaPartida() {
+        int num = solicitarNumeroZombis();
+        Juego juego = new Juego(num);
+        juego.iniciarTablero(num);
+        return juego;
+    }
+
+    private static int solicitarNumeroZombis() {
+        int num = 0;
+        while (num < 1 || num > 4) {
+            System.out.print("Numero de Zombis (1-4): ");
+            num = leerEntero();
         }
+        return num;
+    }
 
-        // Registros finales
-        juego.mostrarRegistroComestibles();
-        juego.mostrarRegistroEliminaciones();
+    private static void ejecutarBucleJuego(Juego juego) {
+        while (!juego.juegoTerminado()) {
+            juego.turnos();
+            System.out.println("\n--- FIN TURNO " + juego.turnoActual + " ---");
+            if (!procesarComandoUsuario(juego)) break;
+        }
+    }
 
-        String resultado = juego.isVictoria()
-                ? "LOS ZOMBIS HAN GANADO"
-                : "LOS ZOMBIS HAN PERDIDO";
-        juego.registrarEvento("\n" + resultado);
+    private static boolean procesarComandoUsuario(Juego juego) {
+        System.out.println("[ENTER] Seguir | [V] Ver | [G] Guardar | [S] Salir");
+        String cmd = SC.next().toUpperCase();
+        
+        switch (cmd) {
+            case "V": 
+                juego.visualizarEstado(); 
+                return true;
+            case "G": 
+                guardarPartida(juego); 
+                return true;
+            case "S": 
+                juego.forzarFin(); 
+                return false;
+            default: 
+                return true;
+        }
+    }
+
+    private static void guardarPartida(Juego juego) {
+        try {
+            System.out.print("Nombre archivo: ");
+            juego.guardarPartida(SC.next());
+        } catch (Exception e) {
+            System.out.println("Error guardando.");
+        }
     }
 
     private static int leerEntero() {
-        while (!SC.hasNextInt()) {
-            System.out.print("Introduce un numero entero: ");
-            SC.next();
-        }
+        while (!SC.hasNextInt()) SC.next();
         return SC.nextInt();
     }
 
-    
-    // CONSTRUCTOR
-    
-    public Juego(int numeroZombis) {
-        if (numeroZombis < 1 || numeroZombis > 4) {
-            throw new IllegalArgumentException("Numero de zombis debe ser entre 1 y 4");
-        }
-
+    public Juego(int numZombis) {
         this.zombis = new ArrayList<>();
         this.humanos = new ArrayList<>();
         this.conejos = new ArrayList<>();
         this.ataquesEspeciales = new ArrayList<>();
-        this.tablero = new Tablero(numeroZombis);
-        this.turnoActual = 0;
-        this.juegoTerminado = false;
-        this.victoria = false;
-        this.contadorHumanos = 1;
-        this.contadorConejos = 1;
         this.logPartida = new StringBuilder();
-
-        registrarEvento("=== NUEVA PARTIDA INICIADA CON " + numeroZombis + " ZOMBI(S) ===\n");
+        this.turnoActual = 0;
+        if (numZombis >= 1) this.tablero = new Tablero(numZombis);
     }
 
-    // INICIALIZACIÓN ENTIDADES
-    
-    public void agregarZombi(Zombi zombi) {
-        Casilla casillaInicial = tablero.obtenerCasillaInicial();
-        zombi.setCasillaActual(casillaInicial);
-        casillaInicial.agregarEntidad(zombi);
-        zombis.add(zombi);
+    public void iniciarTablero(int numZombis) {
+        if (this.tablero == null) this.tablero = new Tablero(numZombis);
+        registrarEvento("Iniciando con " + numZombis + " zombis.");
+        crearAtaquesPorDefecto();
+        inicializarZombis(numZombis);
+        generarHumanosIniciales(numZombis);
+    }
 
-        registrarEvento("Zombi '" + zombi.getNombre() + "' agregado en posicion inicial (0,0)");
+    private void crearAtaquesPorDefecto() {
+        registrarAtaque(0, new AtaqueEspecial(0, "Golpe Brutal", 2, 4, 0));
+        registrarAtaque(1, new AtaqueEspecial(1, "Zarpazo", 3, 4, 1));
+        registrarAtaque(2, new AtaqueEspecial(2, "Mordisco Letal", 2, 3, 0));
+    }
 
-        // 3 humanos combatientes aleatorios por zombi
-        for (int i = 0; i < 3; i++) {
-            generarHumanoCombatienteAleatorio();
+    private void inicializarZombis(int numZombis) {
+        String[] nombres = {"Matias", "Ramon", "Luisma", "Carlos"};
+        for (int i = 0; i < numZombis; i++) {
+            Casilla inicio = tablero.obtenerCasillaInicial();
+            int idAtaque = i % ataquesEspeciales.size();
+            Zombi z = new Zombi(nombres[i % nombres.length], inicio, ataquesEspeciales.get(idAtaque));
+            inicio.agregarEntidad(z);
+            zombis.add(z);
+            registrarEvento("Zombi " + z.getNombre() + " creado.");
         }
     }
 
-    public void registrarAtaqueEspecial(int id, AtaqueEspecial ataque) {
-        while (ataquesEspeciales.size() <= id) {
-            ataquesEspeciales.add(null);
-        }
-        ataquesEspeciales.set(id, ataque);
-        registrarEvento("Ataque especial registrado: ID=" + id + ", Nombre=" + ataque.getNombre());
-    }
-
-    // 
-    // GENERACIÓN DE ENTIDADES
-    // 
-    public void generarHumanoCombatienteAleatorio() {
-        double prob = random.nextDouble();
-        Combatiente.Tipo tipo;
-
-        if (prob < 0.40) {
-            tipo = Combatiente.Tipo.SOLDADO;
-        } else if (prob < 0.65) {
-            tipo = Combatiente.Tipo.ESPECIALISTA;
-        } else if (prob < 0.90) {
-            tipo = Combatiente.Tipo.BLINDADO;
-        } else {
-            generarIngeniero();
-            return;
-        }
-
-        String nombre = tipo.toString() + "_" + contadorHumanos++;
-        Casilla casillaAleatoria = tablero.obtenerCasillaAleatoria();
-        Combatiente humano = new Combatiente(nombre, casillaAleatoria, tipo);
-        casillaAleatoria.agregarEntidad(humano);
-        humanos.add(humano);
-
-        registrarEvento("Aparece " + tipo + " en (" +
-                casillaAleatoria.getCoordenadaX() + "," +
-                casillaAleatoria.getCoordenadaY() + ")");
-    }
-
-    private void generarIngeniero() {
-        String nombre = "INGENIERO_" + contadorHumanos++;
-        Casilla casillaAleatoria = tablero.obtenerCasillaAleatoria();
-        Ingeniero ingeniero = new Ingeniero(nombre, casillaAleatoria);
-        casillaAleatoria.agregarEntidad(ingeniero);
-        humanos.add(ingeniero);
-
-        registrarEvento("¡Aparece INGENIERO en (" +
-                casillaAleatoria.getCoordenadaX() + "," +
-                casillaAleatoria.getCoordenadaY() + ")!");
-    }
-
-    public void generarComidaAleatoria() {
-        double prob = random.nextDouble();
-
-        if (prob < 0.30) {
-            Casilla casillaAleatoria = tablero.obtenerCasillaAleatoria();
-            String nombre = "Huidizo_" + contadorHumanos++;
-            Huidizo huidizo = new Huidizo(nombre, casillaAleatoria);
-            casillaAleatoria.agregarEntidad(huidizo);
-            humanos.add(huidizo);
-            registrarEvento("  ¡Aparece Humano Huidizo en (" +
-                    casillaAleatoria.getCoordenadaX() + "," +
-                    casillaAleatoria.getCoordenadaY() + ")!");
-        } else if (prob < 0.80) {
-            Casilla casillaAleatoria = tablero.obtenerCasillaAleatoria();
-            String nombre = "Conejo_" + contadorConejos++;
-            Conejo conejo = new Conejo(nombre, casillaAleatoria);
-            casillaAleatoria.agregarEntidad(conejo);
-            conejos.add(conejo);
-            registrarEvento("  ¡Aparece Conejo en (" +
-                    casillaAleatoria.getCoordenadaX() + "," +
-                    casillaAleatoria.getCoordenadaY() + ")!");
-        } else {
-            registrarEvento("  No aparece nada...");
+    private void generarHumanosIniciales(int numZombis) {
+        for (int i = 0; i < 3 * numZombis; i++) {
+            generarHumano();
         }
     }
 
-    
-    // FLUJO DEL JUEGO
-    
-    public void ejecutarTurno() {
-        if (juegoTerminado) {
-            registrarEvento("El juego ya ha terminado.");
-            return;
-        }
-
+    public void turnos() {
         turnoActual++;
-        registrarEvento("\n========== TURNO " + turnoActual + " ==========");
-
-        // FASE 1: Turnos de cada zombi (INTERACTIVOS)
-        for (Zombi zombi : zombis) {
-            if (zombi.getEstado() == Estado.ACTIVO) {
-                ejecutarTurnoZombiInteractivo(zombi);
-            }
-        }
-
-        // FASE 2: Activación de humanos
-        activarHumanos();
-
-        // FASE 3: Nuevos humanos combatientes
-        registrarEvento("\n--- Fase de aparicion de nuevos humanos ---");
-        for (int i = 0; i < zombis.size(); i++) {
-            generarHumanoCombatienteAleatorio();
-        }
-
-        // FASE 4: Comprobar victoria/derrota
-        verificarCondicionesFinales();
-
-        // Mostrar tablero
-        tablero.mostrarTablero();
+        registrarEvento("\n>>> TURNO " + turnoActual + " <<<");
+        
+        procesarTurnosZombis();
+        procesarActivacionesHumanos();
+        generarRefuerzos();
+        verificarCondicionesFinJuego();
     }
 
-    /**
-     * Turno interactivo de un zombi: el jugador elige las acciones desde consola
-     */
-    private void ejecutarTurnoZombiInteractivo(Zombi zombi) {
-        registrarEvento("\n--- Turno de " + zombi.getNombre() + " ---");
-        zombi.iniciarTurno();
-
-        if (zombi.getEstado() == Estado.ELIMINADO) {
-            registrarEvento(zombi.getNombre() + " ha sido eliminado por heridas.");
-            return;
+    private void procesarTurnosZombis() {
+        for (Zombi z : zombis) {
+            if (z.getEstado() == Estado.ACTIVO) turnoZombi(z);
         }
-
-        while (zombi.getAccionesRestantes() > 0) {
-            System.out.println("\nAcciones restantes de " + zombi.getNombre() + ": " + zombi.getAccionesRestantes());
-            System.out.println("Casilla actual: (" +
-                    zombi.getCasillaActual().getCoordenadaX() + "," +
-                    zombi.getCasillaActual().getCoordenadaY() + ")");
-            System.out.println("Hambre: " + zombi.getHambre() + " | Heridas: " + zombi.getHeridas());
-
-            System.out.println("\nElige acción:");
-            System.out.println("1) Moverse");
-            System.out.println("2) Atacar (Devorar)");
-            System.out.println("3) Atacar (Especial)");
-            System.out.println("4) Buscar comida");
-            System.out.println("5) No hacer nada");
-            System.out.print("Opcion: ");
-
-            int opcion = leerEntero();
-
-            switch (opcion) {
-                case 1:
-                    manejarMovimiento(zombi);
-                    break;
-                case 2:
-                    manejarAtaque(zombi, false);
-                    break;
-                case 3:
-                    manejarAtaque(zombi, true);
-                    break;
-                case 4:
-                    zombi.buscarComida(this);
-                    break;
-                case 5:
-                    zombi.noHacerNada();
-                    break;
-                default:
-                    System.out.println("Opcion no válida.");
-            }
-
-            if (zombi.getEstado() == Estado.ELIMINADO) {
-                registrarEvento(zombi.getNombre() + " ha sido eliminado durante su turno.");
-                break;
-            }
-        }
-
-        zombi.finalizarTurno();
     }
 
-    private void manejarMovimiento(Zombi zombi) {
-        Casilla actual = zombi.getCasillaActual();
-        System.out.println("Mover desde (" + actual.getCoordenadaX() + "," + actual.getCoordenadaY() + ")");
-        System.out.print("Introduce destino X: ");
-        int x = leerEntero();
-        System.out.print("Introduce destino Y: ");
-        int y = leerEntero();
-
-        Casilla destino;
-        try {
-            destino = tablero.obtenerCasilla(x, y);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Casilla fuera de tablero.");
-            return;
-        }
-        zombi.mover(destino);
-    }
-
-    private void manejarAtaque(Zombi zombi, boolean especial) {
-        Casilla actual = zombi.getCasillaActual();
-        System.out.println("Ataque desde (" + actual.getCoordenadaX() + "," + actual.getCoordenadaY() + ")");
-        System.out.print("Introduce X objetivo: ");
-        int x = leerEntero();
-        System.out.print("Introduce Y objetivo: ");
-        int y = leerEntero();
-
-        Casilla objetivo;
-        try {
-            objetivo = tablero.obtenerCasilla(x, y);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Casilla fuera de tablero.");
-            return;
-        }
-
-        Ataque ataque = especial ? zombi.getAtaqueEspecial() : zombi.getAtaqueNormal();
-        if (ataque == null) {
-            System.out.println("El zombi no tiene ataque especial configurado.");
-            return;
-        }
-        zombi.atacar(objetivo, ataque);
-    }
-
-    private void activarHumanos() {
-        registrarEvento("\n--- Fase de activacion de humanos ---");
-        List<Humano> humanosActivos = new ArrayList<>(humanos);
-
-        for (Humano humano : humanosActivos) {
-            if (!humano.estaEliminado()) {
-                humano.activar(this);
-            }
+    private void procesarActivacionesHumanos() {
+        registrarEvento("--- Activacion Humanos ---");
+        List<Humano> copia = new ArrayList<>(humanos);
+        for (Humano h : copia) {
+            if (!h.estaEliminado()) h.activar(this);
         }
         humanos.removeIf(Humano::estaEliminado);
     }
 
-    private void verificarCondicionesFinales() {
-        for (Zombi zombi : zombis) {
-            if (zombi.getEstado() == Estado.ELIMINADO) {
-                juegoTerminado = true;
-                victoria = false;
-                registrarEvento("\n*** DERROTA: " + zombi.getNombre() + " ha sido eliminado ***");
-                return;
-            }
+    private void generarRefuerzos() {
+        registrarEvento("--- Refuerzos ---");
+        long vivos = zombis.stream().filter(z -> z.getEstado() == Estado.ACTIVO).count();
+        for (int i = 0; i < vivos; i++) {
+            generarHumano();
         }
+    }
 
-        boolean todosEnSalida = true;
-        boolean todosComieronHuidizo = true;
-
-        for (Zombi zombi : zombis) {
-            if (!zombi.getCasillaActual().esSalida()) {
-                todosEnSalida = false;
-            }
-            boolean comioHuidizo = false;
-            for (Comestible c : zombi.getComestiblesConsumidos()) {
-                if (c instanceof Huidizo) {
-                    comioHuidizo = true;
-                    break;
-                }
-            }
-            if (!comioHuidizo) {
-                todosComieronHuidizo = false;
-            }
+    private void verificarCondicionesFinJuego() {
+        if (zombis.stream().anyMatch(z -> z.getEstado() == Estado.ELIMINADO)) {
+            registrarEvento("Un zombi ha sido eliminado. DERROTA.");
+            juegoTerminado = true;
+            victoria = false;
+            return;
         }
-
+        
+        boolean todosEnSalida = zombis.stream()
+            .filter(z -> z.getEstado() == Estado.ACTIVO)
+            .allMatch(z -> z.getCasillaActual().equals(tablero.getCasillaSalida()));
+        
+        boolean todosComieronHuidizo = zombis.stream()
+            .filter(z -> z.getEstado() == Estado.ACTIVO)
+            .allMatch(z -> z.getComestiblesConsumidos().stream()
+                .anyMatch(c -> c instanceof Huidizo));
+        
         if (todosEnSalida && todosComieronHuidizo) {
+            registrarEvento("VICTORIA! Todos los zombis llegaron a la salida tras comer huidizos.");
             juegoTerminado = true;
             victoria = true;
-            registrarEvento("\n*** ¡VICTORIA! Todos los zombis han llegado a la salida ***");
         }
     }
 
-    
-    // IMPORTAR / GUARDAR PARTIDA
-    
-    public void importarPartida(String rutaArchivo) throws IOException {
-        registrarEvento("\n=== IMPORTANDO PARTIDA DESDE: " + rutaArchivo + " ===");
-        Zombi ultimoZombi = null;
+    private void turnoZombi(Zombi z) {
+        registrarEvento("\n> Turno " + z.getNombre());
+        z.iniciarTurno();
+        if (z.getEstado() == Estado.ELIMINADO) return;
+        
+        while (z.getAccionesRestantes() > 0 && z.getEstado() == Estado.ACTIVO) {
+            mostrarEstadoTurno(z);
+            ejecutarAccionZombi(z);
+        }
+        z.finalizarTurno();
+    }
 
-        BufferedReader br = new BufferedReader(new FileReader(rutaArchivo));
-        String linea;
+    private void mostrarEstadoTurno(Zombi z) {
+        tablero.mostrarTablero(z);
+        System.out.println("\n==========================================");
+        System.out.println(" TURNO: " + z.getNombre().toUpperCase());
+        System.out.println(" Pos: (" + z.getCasillaActual().getCoordenadaX() + "," + 
+                          z.getCasillaActual().getCoordenadaY() + ")");
+        System.out.println("------------------------------------------");
+        System.out.println(" Hambre: " + z.getHambre() + "/5 | Heridas: " + z.getHeridas() + 
+                          "/5 | Acciones: " + z.getAccionesRestantes());
+        System.out.println("==========================================");
+    }
 
-        while ((linea = br.readLine()) != null) {
-            String[] partes = linea.split("\t");
-            if (partes.length == 0) continue;
+    private void ejecutarAccionZombi(Zombi z) {
+        mostrarMenuAcciones(z);
+        int op = leerEntero();
+        
+        switch (op) {
+            case 1: moverZombi(z); break;
+            case 2: atacarConZombi(z, z.getAtaqueNormal()); break;
+            case 3: ejecutarAtaqueEspecial(z); break;
+            case 4: z.buscarComida(this); break;
+            case 5: z.noHacerNada(); break;
+            default: System.out.println("Opcion invalida.");
+        }
+    }
 
-            String tipo = partes[0];
+    private void mostrarMenuAcciones(Zombi z) {
+        String nombreEsp = (z.getAtaqueEspecial() != null) ? 
+                          z.getAtaqueEspecial().getNombre() : "Sin Ataque";
+        System.out.println("1. Mover | 2. Devorar | 3. " + nombreEsp + 
+                          " | 4. Buscar Comida | 5. Pasar");
+        System.out.print("-> Opcion: ");
+    }
 
-            switch (tipo) {
-                case "A":
-                    int idAtaque = Integer.parseInt(partes[1]);
-                    String nombreAtaque = partes[2];
-                    int potencia = Integer.parseInt(partes[3]);
-                    int valorExito = Integer.parseInt(partes[4]);
-                    int alcance = Integer.parseInt(partes[5]);
-                    AtaqueEspecial ataque = new AtaqueEspecial(idAtaque, nombreAtaque, potencia, valorExito, alcance);
-                    registrarAtaqueEspecial(idAtaque, ataque);
-                    break;
+    private void moverZombi(Zombi z) {
+        System.out.print(" > X: ");
+        int x = leerEntero();
+        System.out.print(" > Y: ");
+        int y = leerEntero();
+        try {
+            z.mover(tablero.obtenerCasilla(x, y));
+        } catch (Exception e) {
+            System.out.println(" (!) Movimiento invalido");
+        }
+    }
 
-                case "Z":
-                    String nombreZombi = partes[1];
-                    int heridas = Integer.parseInt(partes[2]);
-                    int hambre = Integer.parseInt(partes[3]);
-                    int xZ = Integer.parseInt(partes[4]);
-                    int yZ = Integer.parseInt(partes[5]);
-                    int idAtaqueZ = Integer.parseInt(partes[6]);
-                    int nComidos = Integer.parseInt(partes[7]);
+    private void atacarConZombi(Zombi z, Ataque a) {
+        Casilla objetivo = solicitarCasillaObjetivo();
+        if (objetivo == null) return;
+        
+        if (verificarAlcance(z, objetivo, a)) {
+            z.atacar(objetivo, a);
+        } else {
+            System.out.println(" (!) Fuera de alcance.");
+        }
+    }
 
-                    AtaqueEspecial ataqueZombi = ataquesEspeciales.get(idAtaqueZ);
-                    Casilla casillaZ = tablero.obtenerCasilla(xZ, yZ);
-                    Zombi zombi = new Zombi(nombreZombi, casillaZ, ataqueZombi);
-                    zombi.setHeridas(heridas);
-                    zombi.setHambre(hambre);
-                    casillaZ.agregarEntidad(zombi);
-                    zombis.add(zombi);
-                    ultimoZombi = zombi;
-                    break;
+    private void ejecutarAtaqueEspecial(Zombi z) {
+        if (z.getAtaqueEspecial() != null) {
+            atacarConZombi(z, z.getAtaqueEspecial());
+        } else {
+            System.out.println(" (!) No tienes ataque especial.");
+        }
+    }
 
-                case "Comido":
-                    if (ultimoZombi != null) {
-                        String tipoComido = partes[1];
-                        Comestible c = crearComestibleHistorico(tipoComido);
-                        if (c != null) {
-                            ultimoZombi.registrarComestible(c);
-                            registrarEvento("Zombi " + ultimoZombi.getNombre() +
-                                    " registro comestible historico: " + tipoComido);
-                        }
-                    }
-                    break;
+    private Casilla solicitarCasillaObjetivo() {
+        System.out.print(" > Objetivo X: ");
+        int x = leerEntero();
+        System.out.print(" > Objetivo Y: ");
+        int y = leerEntero();
+        try {
+            return tablero.obtenerCasilla(x, y);
+        } catch (Exception e) {
+            System.out.println(" (!) Casilla invalida.");
+            return null;
+        }
+    }
 
-                case "S":
-                case "B":
-                case "E":
-                case "I":
-                case "H":
-                    crearHumanoDesdeCodigo(tipo, Integer.parseInt(partes[1]), Integer.parseInt(partes[2]));
-                    break;
+    private boolean verificarAlcance(Zombi z, Casilla objetivo, Ataque a) {
+        int dist = Math.abs(z.getCasillaActual().getCoordenadaX() - objetivo.getCoordenadaX()) +
+                  Math.abs(z.getCasillaActual().getCoordenadaY() - objetivo.getCoordenadaY());
+        return dist <= a.getAlcance();
+    }
 
-                case "C":
-                    String nombreConejo = partes[1];
-                    int xC = Integer.parseInt(partes[2]);
-                    int yC = Integer.parseInt(partes[3]);
-                    Casilla casillaC = tablero.obtenerCasilla(xC, yC);
-                    Conejo conejo = new Conejo(nombreConejo, casillaC);
-                    casillaC.agregarEntidad(conejo);
-                    conejos.add(conejo);
-                    break;
+    public void generarHumano() {
+        double p = random.nextDouble();
+        Casilla c = tablero.obtenerCasillaAleatoria();
+        Humano h;
+        String id = String.valueOf(contadorHumanos++);
+        
+        if (p < 0.4) h = new Combatiente("S_" + id, c, Combatiente.Tipo.SOLDADO);
+        else if (p < 0.65) h = new Combatiente("E_" + id, c, Combatiente.Tipo.ESPECIALISTA);
+        else if (p < 0.9) h = new Combatiente("B_" + id, c, Combatiente.Tipo.BLINDADO);
+        else h = new Ingeniero("I_" + id, c);
+        
+        c.agregarEntidad(h);
+        humanos.add(h);
+        registrarEvento("Spawn: " + h.getNombre());
+    }
 
-                case "F":
-                    registrarEvento("Casilla de salida confirmada en: (" + partes[1] + "," + partes[2] + ")");
-                    break;
+    public void generarComidaAleatoria() {
+        double p = random.nextDouble();
+        Casilla c = tablero.obtenerCasillaAleatoria();
+        
+        if (p < 0.3) {
+            Huidizo h = new Huidizo("H_" + contadorHumanos++, c);
+            c.agregarEntidad(h);
+            humanos.add(h);
+            registrarEvento("Huidizo encontrado!");
+        } else if (p < 0.8) {
+            Conejo co = new Conejo("C_" + contadorConejos++, c);
+            c.agregarEntidad(co);
+            conejos.add(co);
+            registrarEvento("Conejo encontrado!");
+        } else {
+            registrarEvento("Nada.");
+        }
+    }
+
+    public void importarPartida(String fichero) throws IOException {
+        limpiarEstado();
+        calcularTamanioTablero(fichero);
+        cargarDatosDesdeArchivo(fichero);
+        registrarEvento("Importado OK.");
+        tablero.mostrarTablero(null);
+    }
+
+    private void limpiarEstado() {
+        zombis.clear();
+        humanos.clear();
+        conejos.clear();
+        ataquesEspeciales.clear();
+        contadorHumanos = 1;
+        contadorConejos = 1;
+    }
+
+    private void calcularTamanioTablero(String fichero) throws IOException {
+        int max = 0, nZ = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String l;
+            while ((l = br.readLine()) != null) {
+                String[] p = l.split("\t");
+                if (p.length > 0 && p[0].equals("Z")) nZ++;
+                for (String s : p) {
+                    try {
+                        int v = Integer.parseInt(s);
+                        if (v < 20) max = Math.max(max, v);
+                    } catch (Exception e) {}
+                }
             }
         }
-        br.close();
-        registrarEvento("=== PARTIDA IMPORTADA EXITOSAMENTE ===\n");
+        int zCalc = Math.max(nZ, 1);
+        while ((6 + zCalc) < (max + 1) && zCalc < 4) zCalc++;
+        this.tablero = new Tablero(zCalc);
+        registrarEvento("Tablero importado tam: " + (6 + zCalc));
     }
 
-    private Comestible crearComestibleHistorico(String codigo) {
-        switch (codigo) {
-            case "S":
-                return new Combatiente("Soldado_hist", null, Combatiente.Tipo.SOLDADO);
-            case "H":
-                return new Huidizo("Huidizo_hist", null);
-            case "I":
-                return new Ingeniero("Ingeniero_hist", null);
+    private void cargarDatosDesdeArchivo(String fichero) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(fichero))) {
+            String l;
+            Zombi lastZombi = null;
+            while ((l = br.readLine()) != null) {
+                String[] p = l.split("\t");
+                if (p.length < 1) continue;
+                
+                lastZombi = procesarLineaImportacion(p, lastZombi);
+            }
+        }
+    }
+
+    private Zombi procesarLineaImportacion(String[] p, Zombi lastZombi) {
+        switch (p[0]) {
+            case "A":
+                cargarAtaque(p);
+                return lastZombi;
+            case "Z":
+                return cargarZombi(p);
+            case "Comido":
+                if (lastZombi != null) lastZombi.registrarComestible(crearComestibleDummy(p[1]));
+                return lastZombi;
             case "C":
-                return new Conejo("Conejo_hist", null);
+                cargarConejo(p);
+                return lastZombi;
+            case "F":
+                establecerSalida(p);
+                return lastZombi;
             default:
-                return null;
+                cargarHumano(p);
+                return lastZombi;
         }
     }
 
-    private void crearHumanoDesdeCodigo(String codigo, int x, int y) {
-        Casilla casilla = tablero.obtenerCasilla(x, y);
-        switch (codigo) {
-            case "S":
-                Combatiente soldado = new Combatiente("Soldado_" + contadorHumanos++, casilla,
-                        Combatiente.Tipo.SOLDADO);
-                casilla.agregarEntidad(soldado);
-                humanos.add(soldado);
-                break;
-            case "B":
-                Combatiente blindado = new Combatiente("Blindado_" + contadorHumanos++, casilla,
-                        Combatiente.Tipo.BLINDADO);
-                casilla.agregarEntidad(blindado);
-                humanos.add(blindado);
-                break;
-            case "E":
-                Combatiente especialista = new Combatiente("Especialista_" + contadorHumanos++, casilla,
-                        Combatiente.Tipo.ESPECIALISTA);
-                casilla.agregarEntidad(especialista);
-                humanos.add(especialista);
-                break;
-            case "I":
-                Ingeniero ingeniero = new Ingeniero("Ingeniero_" + contadorHumanos++, casilla);
-                casilla.agregarEntidad(ingeniero);
-                humanos.add(ingeniero);
-                break;
-            case "H":
-                Huidizo huidizo = new Huidizo("Huidizo_" + contadorHumanos++, casilla);
-                casilla.agregarEntidad(huidizo);
-                humanos.add(huidizo);
-                break;
+    private void cargarAtaque(String[] p) {
+        if (p.length >= 6) {
+            int id = Integer.parseInt(p[1]);
+            registrarAtaque(id, new AtaqueEspecial(id, p[2], 
+                Integer.parseInt(p[3]), Integer.parseInt(p[4]), Integer.parseInt(p[5])));
         }
     }
 
-    public void guardarPartida(String rutaArchivo) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(rutaArchivo));
+    private Zombi cargarZombi(String[] p) {
+        if (p.length >= 7) {
+            int idA = Integer.parseInt(p[6]);
+            if (idA >= ataquesEspeciales.size() || ataquesEspeciales.get(idA) == null) {
+                registrarAtaque(idA, new AtaqueEspecial(idA, "Def", 1, 4, 0));
+            }
+            Casilla cz = tablero.obtenerCasilla(Integer.parseInt(p[4]), Integer.parseInt(p[5]));
+            Zombi z = new Zombi(p[1], cz, ataquesEspeciales.get(idA));
+            z.setHeridas(Integer.parseInt(p[2]));
+            z.setHambre(Integer.parseInt(p[3]));
+            cz.agregarEntidad(z);
+            zombis.add(z);
+            return z;
+        }
+        return null;
+    }
 
+    private void cargarConejo(String[] p) {
+        if (p.length >= 4) {
+            Casilla cc = tablero.obtenerCasilla(Integer.parseInt(p[2]), Integer.parseInt(p[3]));
+            Conejo co = new Conejo(p[1], cc);
+            cc.agregarEntidad(co);
+            conejos.add(co);
+        }
+    }
+
+    private void establecerSalida(String[] p) {
+        if (p.length >= 3) {
+            Casilla old = tablero.getCasillaSalida();
+            if (old != null) old.setEsSalida(false);
+            Casilla nueva = tablero.obtenerCasilla(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+            nueva.setEsSalida(true);
+        }
+    }
+
+    private void cargarHumano(String[] p) {
+        if (p.length >= 3) {
+            Casilla ch = tablero.obtenerCasilla(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+            Humano h = null;
+            String id = String.valueOf(contadorHumanos++);
+            
+            if (p[0].equals("S")) h = new Combatiente("S_" + id, ch, Combatiente.Tipo.SOLDADO);
+            else if (p[0].equals("B")) h = new Combatiente("B_" + id, ch, Combatiente.Tipo.BLINDADO);
+            else if (p[0].equals("E")) h = new Combatiente("E_" + id, ch, Combatiente.Tipo.ESPECIALISTA);
+            else if (p[0].equals("I")) h = new Ingeniero("I_" + id, ch);
+            else if (p[0].equals("H")) h = new Huidizo("H_" + id, ch);
+            
+            if (h != null) {
+                ch.agregarEntidad(h);
+                humanos.add(h);
+            }
+        }
+    }
+
+    private Comestible crearComestibleDummy(String tipo) {
+        switch (tipo) {
+            case "H": return new Huidizo("dummy", null);
+            case "C": return new Conejo("dummy", null);
+            case "S": return new Combatiente("dummy", null, Combatiente.Tipo.SOLDADO);
+            case "B": return new Combatiente("dummy", null, Combatiente.Tipo.BLINDADO);
+            case "E": return new Combatiente("dummy", null, Combatiente.Tipo.ESPECIALISTA);
+            case "I": return new Ingeniero("dummy", null);
+            default: return new Conejo("dummy", null);
+        }
+    }
+
+    public void guardarPartida(String ruta) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ruta))) {
+            guardarAtaques(bw);
+            guardarZombis(bw);
+            guardarEntidadesTablero(bw);
+            guardarSalida(bw);
+        }
+        System.out.println("Partida guardada en: " + ruta);
+    }
+
+    private void guardarAtaques(BufferedWriter bw) throws IOException {
         for (int i = 0; i < ataquesEspeciales.size(); i++) {
-            AtaqueEspecial ataque = ataquesEspeciales.get(i);
-            if (ataque != null) {
-                bw.write("A\t" + i + "\t" + ataque.getNombre() + "\t" +
-                        ataque.getPotencia() + "\t" + ataque.getValorExito() + "\t" +
-                        ataque.getAlcance() + "\n");
+            AtaqueEspecial a = ataquesEspeciales.get(i);
+            if (a != null) {
+                bw.write("A\t" + i + "\t" + a.getNombre() + "\t" + a.getPotencia() + 
+                        "\t" + a.getValorExito() + "\t" + a.getAlcance() + "\n");
             }
         }
-
-        for (Zombi zombi : zombis) {
-            int idAtaque = ataquesEspeciales.indexOf(zombi.getAtaqueEspecial());
-            List<Comestible> comidos = zombi.getComestiblesConsumidos();
-
-            bw.write("Z\t" + zombi.getNombre() + "\t" + zombi.getHeridas() + "\t" +
-                    zombi.getHambre() + "\t" + zombi.getCasillaActual().getCoordenadaX() + "\t" +
-                    zombi.getCasillaActual().getCoordenadaY() + "\t" + idAtaque + "\t" +
-                    comidos.size() + "\n");
-
-            for (Comestible c : comidos) {
-                String tipoComestible = obtenerCodigoComestible(c);
-                bw.write("Comido\t" + tipoComestible + "\n");
-            }
-        }
-
-        for (Humano humano : humanos) {
-            String codigo = obtenerCodigoHumano(humano);
-            bw.write(codigo + "\t" + humano.getCasillaActual().getCoordenadaX() + "\t" +
-                    humano.getCasillaActual().getCoordenadaY() + "\n");
-        }
-
-        for (Conejo conejo : conejos) {
-            bw.write("C\t" + conejo.getNombre() + "\t" +
-                    conejo.getCasillaActual().getCoordenadaX() + "\t" +
-                    conejo.getCasillaActual().getCoordenadaY() + "\n");
-        }
-
-        Casilla salida = tablero.getCasillaSalida();
-        bw.write("F\t" + salida.getCoordenadaX() + "\t" + salida.getCoordenadaY() + "\n");
-
-        bw.close();
-        registrarEvento("Partida guardada en: " + rutaArchivo);
     }
 
-    private String obtenerCodigoComestible(Comestible c) {
-        if (c instanceof Ingeniero) return "I";
-        if (c instanceof Combatiente) {
-            Combatiente.Tipo tipo = ((Combatiente) c).getTipo();
-            switch (tipo) {
-                case SOLDADO:
-                    return "S";
-                case ESPECIALISTA:
-                    return "E";
-                case BLINDADO:
-                    return "B";
+    private void guardarZombis(BufferedWriter bw) throws IOException {
+        for (Zombi z : zombis) {
+            int idAtaque = ataquesEspeciales.indexOf(z.getAtaqueEspecial());
+            bw.write("Z\t" + z.getNombre() + "\t" + z.getHeridas() + "\t" + z.getHambre() + 
+                    "\t" + z.getCasillaActual().getCoordenadaX() + "\t" + 
+                    z.getCasillaActual().getCoordenadaY() + "\t" + idAtaque + "\t" + 
+                    z.getComestiblesConsumidos().size() + "\n");
+            
+            for (Comestible c : z.getComestiblesConsumidos()) {
+                bw.write("Comido\t" + obtenerTipoComestible(c) + "\n");
             }
         }
+    }
+
+    private void guardarEntidadesTablero(BufferedWriter bw) throws IOException {
+        for (Humano h : humanos) {
+            String tipo = obtenerTipoHumano(h);
+            bw.write(tipo + "\t" + h.getCasillaActual().getCoordenadaX() + "\t" + 
+                    h.getCasillaActual().getCoordenadaY() + "\n");
+        }
+        for (Conejo c : conejos) {
+            bw.write("C\t" + c.getNombre() + "\t" + c.getCasillaActual().getCoordenadaX() + 
+                    "\t" + c.getCasillaActual().getCoordenadaY() + "\n");
+        }
+    }
+
+    private void guardarSalida(BufferedWriter bw) throws IOException {
+        Casilla s = tablero.getCasillaSalida();
+        bw.write("F\t" + s.getCoordenadaX() + "\t" + s.getCoordenadaY() + "\n");
+    }
+
+    private String obtenerTipoComestible(Comestible c) {
         if (c instanceof Huidizo) return "H";
         if (c instanceof Conejo) return "C";
-        return "?";
+        if (c instanceof Ingeniero) return "I";
+        if (c instanceof Combatiente) {
+            Combatiente.Tipo t = ((Combatiente) c).getTipo();
+            if (t == Combatiente.Tipo.SOLDADO) return "S";
+            if (t == Combatiente.Tipo.BLINDADO) return "B";
+            if (t == Combatiente.Tipo.ESPECIALISTA) return "E";
+        }
+        return "C";
     }
 
-    private String obtenerCodigoHumano(Humano h) {
+    private String obtenerTipoHumano(Humano h) {
+        if (h instanceof Huidizo) return "H";
         if (h instanceof Ingeniero) return "I";
         if (h instanceof Combatiente) {
-            Combatiente.Tipo tipo = ((Combatiente) h).getTipo();
-            switch (tipo) {
-                case SOLDADO:
-                    return "S";
-                case ESPECIALISTA:
-                    return "E";
-                case BLINDADO:
-                    return "B";
-            }
+            Combatiente.Tipo t = ((Combatiente) h).getTipo();
+            if (t == Combatiente.Tipo.SOLDADO) return "S";
+            if (t == Combatiente.Tipo.BLINDADO) return "B";
+            if (t == Combatiente.Tipo.ESPECIALISTA) return "E";
         }
-        if (h instanceof Huidizo) return "H";
-        return "?";
+        return "S";
     }
 
-    
-    // LOG Y REGISTROS
-    
-    public void registrarEvento(String mensaje) {
-        logPartida.append(mensaje).append("\n");
-        System.out.println(mensaje);
-    }
-
-    public String obtenerLog() {
-        return logPartida.toString();
-    }
-
-    public void guardarLog(String rutaArchivo) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(rutaArchivo));
-        bw.write(logPartida.toString());
-        bw.close();
-        System.out.println("Log guardado en: " + rutaArchivo);
-    }
-
-    public void mostrarRegistroComestibles() {
-        registrarEvento("\n========== REGISTRO DE COMESTIBLES ==========");
-        for (Zombi zombi : zombis) {
-            registrarEvento("\n" + zombi.getNombre() + ":");
-            registrarEvento("  Comestibles consumidos: " + zombi.getComestiblesConsumidos().size());
-            for (Comestible c : zombi.getComestiblesConsumidos()) {
-                registrarEvento("    - DEVORADO: " + obtenerNombreComestible(c));
-            }
+    public void visualizarEstado() {
+        tablero.mostrarTablero(null);
+        System.out.println("\n=== ESTADO ZOMBIS ===");
+        for (Zombi z : zombis) {
+            System.out.println(z.getNombre() + ": Hambre=" + z.getHambre() + 
+                             ", Heridas=" + z.getHeridas() + ", Estado=" + z.getEstado());
         }
+        System.out.println("\n=== HUMANOS VIVOS: " + humanos.size() + " ===");
+        System.out.println("=== CONEJOS VIVOS: " + conejos.size() + " ===");
     }
 
-    public void mostrarRegistroEliminaciones() {
-        registrarEvento("\n========== REGISTRO DE ELIMINACIONES ==========");
-        for (Zombi zombi : zombis) {
-            registrarEvento("\n" + zombi.getNombre() + ":");
-            registrarEvento("  Humanos eliminados: " + zombi.getHumanosEliminados().size());
-            for (Humano h : zombi.getHumanosEliminados()) {
-                registrarEvento("    - ELIMINADO: " + h.getNombre());
-            }
+    public void mostrarResultados() {
+        System.out.println("\n\n======================================");
+        System.out.println(victoria ? "*** VICTORIA ***" : "*** DERROTA ***");
+        System.out.println("======================================");
+        System.out.println("Turnos jugados: " + turnoActual);
+        
+        for (Zombi z : zombis) {
+            System.out.println("\n--- " + z.getNombre() + " ---");
+            System.out.println("Comestibles devorados: " + z.getComestiblesConsumidos().size());
+            System.out.println("Humanos eliminados: " + z.getHumanosEliminados().size());
         }
+        System.out.println("\n======================================");
     }
 
-    private String obtenerNombreComestible(Comestible c) {
-        if (c instanceof Entidad) {
-            return ((Entidad) c).getNombre();
-        }
-        return c.getClass().getSimpleName();
-    }
-
-    
-    // GETTERS / CONTROL
-    
-    public Tablero getTablero() { return tablero; }
-    public List<Zombi> getZombis() { return new ArrayList<>(zombis); }
-    public List<Humano> getHumanos() { return new ArrayList<>(humanos); }
-    public boolean isJuegoTerminado() { return juegoTerminado; }
-    public boolean isVictoria() { return victoria; }
-    public int getTurnoActual() { return turnoActual; }
-
-    public void finalizarJuego() {
+    public void forzarFin() {
         juegoTerminado = true;
-        registrarEvento("\n*** JUEGO FINALIZADO MANUALMENTE ***");
+        victoria = false;
+        registrarEvento("Juego finalizado manualmente.");
     }
+
+    private void registrarEvento(String evento) {
+        logPartida.append(evento).append("\n");
+        System.out.println(evento);
+    }
+
+    public void registrarAtaque(int id, AtaqueEspecial ataque) {
+        while (ataquesEspeciales.size() <= id) {
+            ataquesEspeciales.add(null);
+        }
+        ataquesEspeciales.set(id, ataque);
+    }
+
+    public boolean juegoTerminado() { return juegoTerminado; }
+    public Tablero getTablero() { return tablero; }
+    public List<Zombi> getZombis() { return zombis; }
+    public List<Humano> getHumanos() { return humanos; }
+    public String getLog() { return logPartida.toString(); }
 }

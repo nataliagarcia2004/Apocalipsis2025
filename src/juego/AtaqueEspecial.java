@@ -74,9 +74,11 @@ public class AtaqueEspecial extends Ataque{
         System.out.println(zombi.getNombre() + "usa" + getNombre());
         // ESTE MÉTODO TIENE QUE SER DESARROLLADO DESPUÉS:
         //Verificar alcance (puede ser > 0)
-        if(!estaEnAlcance(zombi.getCasillaActual(),casillaObjetivo)){
-            System.err.println("Fuera de alcance");
+         if (!estaEnAlcance(zombi.getCasillaActual(), casillaObjetivo)) {
+           System.err.println("Fuera de alcance");
+           return false;
         }
+
         //Obtener SOLO humanos 
         List<Humano> objetivos = priorizarHumano(casillaObjetivo.getOcupantes());
         if(objetivos.isEmpty()){
