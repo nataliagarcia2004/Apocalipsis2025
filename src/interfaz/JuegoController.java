@@ -3,10 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package interfaz;
+/**
+ *
+ * @author PC_BASMA
+ */
 
 import juego.*;
-
-
 
 public class JuegoController {
 
@@ -14,110 +16,75 @@ public class JuegoController {
     private LogPanel logPanel;
     private PanelZombi panelZombi;
 
-    
-    public void setPanelZombi(PanelZombi panel) {
-    this.panelZombi = panel;
-}
-
-   public void actualizarPanelZombi() {
-    Zombi z = getZombiActual();
-    if (panelZombi != null && z != null) {
-        panelZombi.actualizarZombi(z);
-    }
-}
-
-
-
     public JuegoController(Juego juego) {
         this.juego = juego;
     }
+
+    /* ================= CONEXIONES CON LA VISTA ================= */
+
+    public void setPanelZombi(PanelZombi panel) {
+        this.panelZombi = panel;
+    }
+
     public void setLogPanel(LogPanel logPanel) {
         this.logPanel = logPanel;
     }
 
-    public void log(String mensaje) {
+    private void log(String mensaje) {
         if (logPanel != null) {
             logPanel.addMensaje(mensaje);
         }
     }
 
-
-    // Devuelve el zombi que juega actualmente
-   public Zombi getZombiActual() {
-    if (juego.getZombis().isEmpty()) {
-        return null;
-    }
-    return juego.getZombis().get(0);
-}
-
-
-    // Ejecuta un turno completo del juego
-    public void ejecutarTurno() {
-        juego.ejecutarTurno();
+    public void actualizarPanelZombi() {
+        if (panelZombi != null && !juego.getZombis().isEmpty()) {
+            panelZombi.actualizarZombi(getZombiActual());
+        }
     }
 
-    // Mueve el zombi actual a una casilla
-    public void mover(int x, int y) {
-        Zombi z = getZombiActual();
-        z.mover(juego.getTablero().obtenerCasilla(x, y));
+    /* ================= ACCESO AL MODELO ================= */
+
+    public Zombi getZombiActual() {
+        return juego.getZombis().get(0); // versión simple (1 zombi)
     }
 
-    // Realiza un ataque normal o especial
-    public void atacar(int x, int y, boolean especial) {
-        Zombi z = getZombiActual();
-        Ataque ataque = especial ? z.getAtaqueEspecial() : z.getAtaqueNormal();
-        z.atacar(juego.getTablero().obtenerCasilla(x, y), ataque);
-    }
-
-    // Devuelve el tablero (para la interfaz)
     public Tablero getTablero() {
         return juego.getTablero();
     }
 
-    // Indica si el juego ha terminado
     public boolean isJuegoTerminado() {
-        return juego.isJuegoTerminado();
+        return juego.juegoTerminado(); // ✅ MÉTODO REAL
     }
 
-// ====== MÉTODOS PARA LA INTERFAZ (PanelAccionesZombi) ======
+    /* ================= ACCIONES DEL PANEL ================= */
 
-public void modoMover() {
-    log("Modo mover activado");
-    // más adelante aquí se pedirá la casilla destino
-}
+    public void modoMover() {
+        log("Modo mover activado");
+        // más adelante: seleccionar casilla desde el tablero
+    }
 
-public void buscarComida() {
-    Zombi z = getZombiActual();
-    z.buscarComida(juego);
-    log("El zombi busca comida");
-    actualizarPanelZombi();
-}
+    public void buscarComida() {
+        Zombi z = getZombiActual();
+        z.buscarComida(juego);
+        log(z.getNombre() + " busca comida");
+        actualizarPanelZombi();
+    }
 
-public void modoAtacar() {
-    SelectorAtaqueDialog dialog =
-        new SelectorAtaqueDialog(null, true);
+    public void modoAtacar() {
+        log("Modo atacar activado");
+        // más adelante: selector de ataque + casilla
+    }
 
-    dialog.setVisible(true); // espera a que el usuario elija
+    public void noHacerNada() {
+        Zombi z = getZombiActual();
+        z.noHacerNada();
+        log(z.getNombre() + " no hace nada");
+        actualizarPanelZombi();
+    }
 
-    boolean especial = dialog.isAtaqueEspecial();
-
-    log("Ataque seleccionado: " + (especial ? "ESPECIAL" : "NORMAL"));
-
-    // De momento NO atacamos aún
-    // Más adelante pediremos la casilla objetivo
-}
-
-public void noHacerNada() {
-    Zombi z = getZombiActual();
-    z.noHacerNada();
-    log("El zombi no hace nada");
-    actualizarPanelZombi();
-}
-
-public void terminarTurnoZombi() {
-    log("Turno del zombi terminado");
-    ejecutarTurno();
-    actualizarPanelZombi();
-}
-
+    public void terminarTurnoZombi() {
+        log("Turno del zombi terminado");
+        juego.turnos();   // ✅ MÉTODO REAL
+        actualizarPanelZombi();
+    }
 }

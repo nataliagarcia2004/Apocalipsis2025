@@ -18,6 +18,8 @@ private PanelZombi panelZombi;
 private PanelAccionesZombi panelAcciones;
 private PanelControl panelControl;
 private LogPanel logPanel;
+private TableroGUI tableroGUI;
+
 
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName());
@@ -44,6 +46,8 @@ private LogPanel logPanel;
     panelAcciones = new PanelAccionesZombi(controller);
     panelControl = new PanelControl(controller);
     logPanel = new LogPanel();
+    tableroGUI = new TableroGUI(juego.getTablero());
+
 
     // 4. Conectar controller con paneles
     controller.setPanelZombi(panelZombi);
@@ -54,6 +58,8 @@ private LogPanel logPanel;
     add(panelAcciones, java.awt.BorderLayout.WEST);
     add(panelZombi, java.awt.BorderLayout.EAST);
     add(logPanel, java.awt.BorderLayout.SOUTH);
+    add(tableroGUI, java.awt.BorderLayout.CENTER);
+
 
     // 6. Primer refresco
     controller.actualizarPanelZombi();
