@@ -28,7 +28,7 @@ public class PanelZombi extends javax.swing.JPanel {
     jLabel3.setText("Hambre: " + z.getHambre());
     jLabel4.setText("Estado: " + z.getEstado());
     jLabel5.setText("Acciones restantes: " + z.getAccionesRestantes());
-
+    
     if (z.getAtaqueEspecial() != null) {
         jLabel6.setText(
             "Ataque especial disponible: " + z.getAtaqueEspecial().getNombre()

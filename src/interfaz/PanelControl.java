@@ -122,4 +122,10 @@ public class PanelControl extends javax.swing.JPanel {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     // End of variables declaration//GEN-END:variables
+
+
+
 }
+
+
+

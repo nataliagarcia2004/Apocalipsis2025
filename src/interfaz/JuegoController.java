@@ -84,7 +84,7 @@ public class JuegoController {
 
     public void terminarTurnoZombi() {
         log("Turno del zombi terminado");
-        juego.turnos();   // ✅ MÉTODO REAL
+        juego.turnos();   
         actualizarPanelZombi();
     }
 }
